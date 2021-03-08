@@ -1,0 +1,79 @@
+automatontools.information.is_alert_present
+=======================
+Present the information utilities for Selenium automaton.
+The is_alert_present method return True if an alert is present.
+
+
+Background
+------------------------
+Launch a test web server serving controlled web pages on localhost port 8081
+
+Use the python resources server.
+
+    >>> from automatontools.resources.server import TestServer
+
+    >>> myserver = TestServer()
+
+    >>> myserver.start()
+
+Instantiate a web driver using the eaiautomatontools.browserServer
+
+    >>> from automatontools.browserServer import BrowserServer
+
+    >>> myWebDriver = BrowserServer()
+
+Use a default browser such as Chrome in 32 bit version
+
+    >>> myWebDriver.set_browser_type(name="chrome", version="32")
+    0
+
+Serve the web driver
+    >>> myWebDriver.serve()
+    0
+
+Open the form test page
+    >>> myWebDriver.go_to("http://127.0.0.1:8081")
+    0
+
+Import the fill field tool
+    >>> from eaiautomatontools.actions import click_element
+
+Import the information tool
+    >>> from eaiautomatontools.information import is_alert_present
+
+Import the alert tool
+    >>> from eaiautomatontools.alerts import intercept_alert
+
+Nominal case: give a web driver
+------------------------------------
+a - No alert present.
+    >>> is_alert_present(driver=myWebDriver.get())
+    False
+
+b - An alert is present.
+    >>> click_element(driver=myWebDriver.get(), field={"type":"id", "value":"button_alert"})
+    0
+
+    >>> is_alert_present(driver=myWebDriver.get())
+    True
+
+
+Assertions
+------------------------------------
+The web driver is mandatory
+    >>> is_alert_present()
+    Traceback (most recent call last):
+    ...
+    AssertionError: Driver is expected.
+
+
+Teardown
+------------------------------
+    >>> myWebDriver.close()
+    0
+
+    >>> myWebDriver = None
+
+    >>> myserver.stop()
+
+    >>> myserver = None

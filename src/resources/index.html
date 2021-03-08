@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Test page</title>
+    <script type="text/javascript" >
+        function Message_alert(){
+            document.getElementById("prompt_return").innerHTML = "";
+            var message = "A message from an alert.\nAnd a second line.";
+            alert(message);
+        }
+
+        function Message_confirm(){
+            document.getElementById("prompt_return").innerHTML = "";
+            var message = "A message from an alert.\nAnd a second line.";
+            var status = confirm(message);
+            if(status === true){
+                document.getElementById("prompt_return").innerHTML = "Confirmed";
+            }else{
+                document.getElementById("prompt_return").innerHTML = "Cancelled";
+            }
+        }
+
+        function Message_prompt(){
+            document.getElementById("prompt_return").innerHTML = "";
+            var message = "A message from an alert.\nAnd a second line."
+            var input = prompt(message,"A default message");
+
+            document.getElementById("prompt_return").innerHTML = input;
+        }
+    </script>
+</head>
+<body>
+    <div id="first">
+        A text here with a link to a <a href="second.html">second page </a>
+    </div>
+
+    <div name="test-div">
+    The <a href="tables.html" id="tables"> tables test page</a>
+    </div>
+
+    <iframe id="myIFrame"
+        src="iframe.html"
+        style="border:none;">
+    </iframe>
+    <button id="button_alert" onclick='Message_alert()'>Alert</button>
+    <button id="button_confirm" onclick='Message_confirm()'>Confirm</button>
+    <button id="button_prompt" onclick='Message_prompt()'>Prompt</button>
+
+    <div>
+        <span id="prompt_return"></span>
+    </div>
+
+</body>
+</html>

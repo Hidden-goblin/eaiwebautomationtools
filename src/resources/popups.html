@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Pop ups test page</title>
+</head>
+<body>
+    <div>
+        <a href="default_popup.html" target="_blank">Use target</a>
+    </div>
+    <div>
+        <a href="default_popup.html" onclick="window.open('first_popup.html',
+                         'newwindow',
+                         'width=300,height=250');
+              return false;">Use JS with first</a>
+    </div>
+    <div>
+        <a href="default_popup.html" onclick="window.open('default_popup.html',
+                         'newwindow',
+                         'width=300,height=250');
+              return false;">Use JS with default</a>
+    </div>
+</body>
+</html>
