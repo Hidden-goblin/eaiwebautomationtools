@@ -1,0 +1,5 @@
+include LICENSE
+include README.rst
+include automatontools/test/*txt
+recursive-include automatontools/resources *js *py *css *html
+recursive-include automatontools/webdrivers *.json *.exe
