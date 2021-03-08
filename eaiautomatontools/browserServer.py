@@ -31,7 +31,7 @@ class BrowserServer:
     It serves all automaton tools such as finders, actions, alert and navigators.
     Although these tools can be used separately and are tested separately,
     it will be easier to use them from this class.
-    Please see the src specific doctest.
+    Please see the eaiautomatontools specific doctest.
     Todo set others webdriver executables
     """
 

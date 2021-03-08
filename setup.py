@@ -35,7 +35,7 @@ setup(
     python_requires='>=3.7, !=2.*',
     # packages=find_packages(),
     # include_package_data=True,
-    package_dir={'': 'src'},
+    package_dir={'': 'eaiautomatontools'},
     author="Eric Aïvayan",
     author_email="eric.aivayan@free.fr"
 )
