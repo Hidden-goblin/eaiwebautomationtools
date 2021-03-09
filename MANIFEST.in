@@ -1,5 +1,6 @@
 include LICENSE
 include README.rst
-include automatontools/test/*txt
-recursive-include automatontools/resources *js *py *css *html
-recursive-include automatontools/webdrivers *.json *.exe
+include README.md
+include test/*txt
+include test/*md
+recursive-include eaiautomatontools/resources *js *py *css *html
