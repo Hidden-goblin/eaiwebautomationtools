@@ -24,8 +24,7 @@ Instantiate a web driver using the eaiautomatontools.browserServer
 
 Use a default browser such as Chrome in 32 bit version
 
-    >>> myWebDriver.set_browser_type(name="chrome", version="32")
-    0
+    >>> myWebDriver.browser_name = "chrome"
 
 Serve the web driver
     >>> myWebDriver.serve()
@@ -42,19 +41,19 @@ Import the information tool
 Nominal case: give a web driver
 ------------------------------------
 a - The field exists and is unique
-    >>> element = is_field_exist(driver=myWebDriver.get(),field={"type":"id","value":"myIFrame"})
+    >>> element = is_field_exist(driver=myWebDriver.webdriver,field={"type":"id","value":"myIFrame"})
 
     >>> print(element) # doctest: +ELLIPSIS
     <selenium.webdriver.remote.webelement.WebElement ...
 
 b - The field doesn't exist
-    >>> element = is_field_exist(driver=myWebDriver.get(),field={"type":"id","value":"myIFramed"})
+    >>> element = is_field_exist(driver=myWebDriver.webdriver,field={"type":"id","value":"myIFramed"})
 
     >>> print(element)
     None
 
 c - The field exist and is not unique
-     >>> element = is_field_exist(driver=myWebDriver.get(),field={"type":"tag_name","value":"div"})
+     >>> element = is_field_exist(driver=myWebDriver.webdriver,field={"type":"tag_name","value":"div"})
 
     >>> print(element) # doctest: +ELLIPSIS
     <selenium.webdriver.remote.webelement.WebElement ...

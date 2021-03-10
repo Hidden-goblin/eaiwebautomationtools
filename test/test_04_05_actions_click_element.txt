@@ -23,8 +23,7 @@ Instantiate a web driver using the eaiautomatontools.browserServer
 
 Use a default browser such as Chrome in 32 bit version
 
-    >>> myWebDriver.set_browser_type(name="chrome", version="32")
-    0
+    >>> myWebDriver.browser_name = "chrome"
 
 Serve the web driver
     >>> myWebDriver.serve()
@@ -43,14 +42,14 @@ Import the set_checkbox tool
 Nominal case: give a web driver, give a valid field
 ---------------------------
 You can click a link
-    >>> click_element(driver=myWebDriver.get(),field={'type':'id','value':'tables'})
+    >>> click_element(driver=myWebDriver.webdriver,field={'type':'id','value':'tables'})
     0
 
     >>> myWebDriver.go_to("http://127.0.0.1:8081")
     0
 
 You can even click a div
-    >>> click_element(driver=myWebDriver.get(),field={'type':'id','value':'first'})
+    >>> click_element(driver=myWebDriver.webdriver,field={'type':'id','value':'first'})
     0
 
 Assertions
@@ -63,20 +62,20 @@ Assertions
 
 2- The field is not valid.
     a- Incorrect type key value.
-    >>> click_element(driver=myWebDriver.get(), field={"type":"idl", "value":"name"})
+    >>> click_element(driver=myWebDriver.webdriver, field={"type":"idl", "value":"name"})
     Traceback (most recent call last):
     ...
     AssertionError: Field '{'type': 'idl', 'value': 'name'}' is not a valid field
 
     b- Incorrect keys value.
-    >>> click_element(driver=myWebDriver.get(), field={"typ":"id", "value":"name"})
+    >>> click_element(driver=myWebDriver.webdriver, field={"typ":"id", "value":"name"})
     Traceback (most recent call last):
     ...
     AssertionError: Field '{'typ': 'id', 'value': 'name'}' is not a valid field
 
 Exceptions
 -------------------------------------
-    >>> click_element(driver=myWebDriver.get(),field={'type':'id','value':'tab'})
+    >>> click_element(driver=myWebDriver.webdriver,field={'type':'id','value':'tab'})
     Traceback (most recent call last):
     ...
     Exception: Element designed by field '{'type': 'id', 'value': 'tab'}' could not be located.

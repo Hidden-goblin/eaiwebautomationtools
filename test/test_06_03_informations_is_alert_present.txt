@@ -24,8 +24,7 @@ Instantiate a web driver using the eaiautomatontools.browserServer
 
 Use a default browser such as Chrome in 32 bit version
 
-    >>> myWebDriver.set_browser_type(name="chrome", version="32")
-    0
+    >>> myWebDriver.browser_name = "chrome"
 
 Serve the web driver
     >>> myWebDriver.serve()
@@ -47,14 +46,14 @@ Import the alert tool
 Nominal case: give a web driver
 ------------------------------------
 a - No alert present.
-    >>> is_alert_present(driver=myWebDriver.get())
+    >>> is_alert_present(driver=myWebDriver.webdriver)
     False
 
 b - An alert is present.
-    >>> click_element(driver=myWebDriver.get(), field={"type":"id", "value":"button_alert"})
+    >>> click_element(driver=myWebDriver.webdriver, field={"type":"id", "value":"button_alert"})
     0
 
-    >>> is_alert_present(driver=myWebDriver.get())
+    >>> is_alert_present(driver=myWebDriver.webdriver)
     True
 
 

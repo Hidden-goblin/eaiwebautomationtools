@@ -28,8 +28,7 @@ Instantiate a web driver using the eaiautomatontools.browserServer
 
 Use a default browser such as Chrome in 32 bit version
 
-    >>> myWebDriver.set_browser_type(name="chrome", version="32")
-    0
+    >>> myWebDriver.browser_name = "chrome"
 
 Serve the web driver
     >>> myWebDriver.serve()
@@ -49,19 +48,19 @@ Import the information tool
 Nominal case: give a web driver
 ------------------------------------
 a - The field text exist but not the value
-    >>> element_text(driver=myWebDriver.get(), field={"type":"id", "value":"lab-name"})
+    >>> element_text(driver=myWebDriver.webdriver, field={"type":"id", "value":"lab-name"})
     'Enter your name:'
 
 b - The field text doesn't exist but the value exists
-    >>> element_text(driver=myWebDriver.get(), field={"type":"id", "value":"labelless-button"})
+    >>> element_text(driver=myWebDriver.webdriver, field={"type":"id", "value":"labelless-button"})
     'label'
 
 c - Both the field text and the value exit and the text are the same
-    >>> element_text(driver=myWebDriver.get(), field={"type":"id", "value":"email"})
+    >>> element_text(driver=myWebDriver.webdriver, field={"type":"id", "value":"email"})
     'Your.mail@he.re'
 
 d - There is no text or attribute 'value'
-    >>> element_text(driver=myWebDriver.get(), field={"type":"id", "value":"span"})
+    >>> element_text(driver=myWebDriver.webdriver, field={"type":"id", "value":"span"})
     ''
 
 Assertions
@@ -75,7 +74,7 @@ The web driver is mandatory
 
 Exception
 ------------------------------------
-    >>> element_text(driver=myWebDriver.get(), field={"type":"id", "value":"one-button"})
+    >>> element_text(driver=myWebDriver.webdriver, field={"type":"id", "value":"one-button"})
     Traceback (most recent call last):
     ...
     Exception: Can't serve the element 'text' having both data for text and attribute value

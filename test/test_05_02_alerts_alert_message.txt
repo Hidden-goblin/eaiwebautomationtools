@@ -26,8 +26,7 @@ Instantiate a web driver using the eaiautomatontools.browserServer
 
 Use a default browser such as Chrome in 32 bit version
 
-    >>> myWebDriver.set_browser_type(name="chrome", version="32")
-    0
+    >>> myWebDriver.browser_name = "chrome"
 
 Serve the web driver
     >>> myWebDriver.serve()
@@ -48,42 +47,42 @@ Nominal case: give a web driver
 ------------------------------------
 a - Alerts - javascript window.alert(message) command
 Open the alert pop up
-    >>> click_element(driver=myWebDriver.get(), field={"type":"id", "value":"button_alert"})
+    >>> click_element(driver=myWebDriver.webdriver, field={"type":"id", "value":"button_alert"})
     0
 
 Retrieve the alert message
-    >>> alert_message(driver=myWebDriver.get())
+    >>> alert_message(driver=myWebDriver.webdriver)
     'A message from an alert.\nAnd a second line.'
 
 Accept the alert without any check
-    >>> intercept_alert(driver=myWebDriver.get())
+    >>> intercept_alert(driver=myWebDriver.webdriver)
     0
 
 b - Confirms - javascript window.confirm(message) command
 Open the alert pop up
-    >>> click_element(driver=myWebDriver.get(), field={"type":"id", "value":"button_confirm"})
+    >>> click_element(driver=myWebDriver.webdriver, field={"type":"id", "value":"button_confirm"})
     0
 
 Retrieve the alert message
-    >>> alert_message(driver=myWebDriver.get())
+    >>> alert_message(driver=myWebDriver.webdriver)
     'A message from an alert.\nAnd a second line.'
 
 
 Accept the alert without any check
-    >>> intercept_alert(driver=myWebDriver.get())
+    >>> intercept_alert(driver=myWebDriver.webdriver)
     0
 
 c - Prompt - javascript window.prompt(message,default) command
 Open the alert pop up
-    >>> click_element(driver=myWebDriver.get(), field={"type":"id", "value":"button_prompt"})
+    >>> click_element(driver=myWebDriver.webdriver, field={"type":"id", "value":"button_prompt"})
     0
 
 Retrieve the alert message
-    >>> alert_message(driver=myWebDriver.get())
+    >>> alert_message(driver=myWebDriver.webdriver)
     'A message from an alert.\nAnd a second line.'
 
 Accept the alert without any check
-    >>> intercept_alert(driver=myWebDriver.get())
+    >>> intercept_alert(driver=myWebDriver.webdriver)
     0
 
 Assertions
@@ -98,7 +97,7 @@ The web driver is mandatory
 Exceptions
 -------------------------------------
 There is no alert to interact with.
-    >>> alert_message(driver=myWebDriver.get())
+    >>> alert_message(driver=myWebDriver.webdriver)
     Traceback (most recent call last):
     ...
     selenium.common.exceptions.NoAlertPresentException: Message: Can't interact with an alert as there is no displayed alert

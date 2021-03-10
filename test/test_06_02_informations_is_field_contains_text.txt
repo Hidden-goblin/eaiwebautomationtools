@@ -24,8 +24,7 @@ Instantiate a web driver using the eaiautomatontools.browserServer
 
 Use a default browser such as Chrome in 32 bit version
 
-    >>> myWebDriver.set_browser_type(name="chrome", version="32")
-    0
+    >>> myWebDriver.browser_name = "chrome"
 
 Serve the web driver
     >>> myWebDriver.serve()
@@ -45,29 +44,29 @@ Import the information tool
 Nominal case: give a web driver
 ------------------------------------
 a - The field contains the text.
-    >>> is_field_contains_text(driver=myWebDriver.get(),field={"type":"id","value":"lab-name"}, text="Enter your name:")
+    >>> is_field_contains_text(driver=myWebDriver.webdriver,field={"type":"id","value":"lab-name"}, text="Enter your name:")
     True
 
 b - The field doesn't contains the text.
-    >>> is_field_contains_text(driver=myWebDriver.get(),field={"type":"id","value":"lab-name"}, text="Your name:")
+    >>> is_field_contains_text(driver=myWebDriver.webdriver,field={"type":"id","value":"lab-name"}, text="Your name:")
     False
 
 c - The field contains the text. The text may be a part of the field text. Beware, as the example b shows, this is case sensitive.
-    >>> is_field_contains_text(driver=myWebDriver.get(),field={"type":"id","value":"lab-name"}, text="your name:")
+    >>> is_field_contains_text(driver=myWebDriver.webdriver,field={"type":"id","value":"lab-name"}, text="your name:")
     True
 
 d - The field contains the text in the value attribute
-    >>> is_field_contains_text(driver=myWebDriver.get(),field={"type":"id","value":"email"}, text="Your.mail@he.re")
+    >>> is_field_contains_text(driver=myWebDriver.webdriver,field={"type":"id","value":"email"}, text="Your.mail@he.re")
     True
 
 Insert some text in it
-    >>> fill_element(driver=myWebDriver.get(),field={"type":"id","value":"email"}, value="my@email.here")
+    >>> fill_element(driver=myWebDriver.webdriver,field={"type":"id","value":"email"}, value="my@email.here")
     0
 
-    >>> is_field_contains_text(driver=myWebDriver.get(),field={"type":"id","value":"email"}, text="Your.mail@he.re")
+    >>> is_field_contains_text(driver=myWebDriver.webdriver,field={"type":"id","value":"email"}, text="Your.mail@he.re")
     False
 
-    >>> is_field_contains_text(driver=myWebDriver.get(),field={"type":"id","value":"email"}, text="my@email.here")
+    >>> is_field_contains_text(driver=myWebDriver.webdriver,field={"type":"id","value":"email"}, text="my@email.here")
     True
 
 Assertions

@@ -47,13 +47,10 @@ def find_element(driver=None, field=None):
         return element
     except AssertionError as assertion:
         log.error("finders.find_element raised an assertion with following input"
-                  " driver:'{}' and field:'{}'. Assertion is '{}'".format(driver,
-                                                                          field,
-                                                                          assertion.args))
+                  f" driver:'{driver}' and field:'{field}'. Assertion is '{assertion.args}'")
         raise
     except KeyError as key_error:
-        log.error("In find_element didn't find the method for"
-                  " '{}' finder method".format(field["type"]))
+        log.error(key_error.args[0])
         raise KeyError(key_error)
     except NoSuchElementException as no_such_element:
         log.error("In find_element didn't find the element '{}'."
@@ -97,8 +94,7 @@ def find_elements(driver=None, field=None):
                                                                        assertion.args))
         raise
     except KeyError as key_error:
-        log.error(
-            "In find_elements didn't find the method for '{}' finder method".format(field["type"]))
+        log.error(key_error.args[0])
         raise KeyError(key_error)
 
 
@@ -116,6 +112,13 @@ def find_from_elements(driver=None, field=None, text=None):
     elements = find_elements(driver=driver, field=field)
     return_element = None
 
+    if text is None:
+        raise AttributeError("text must be provided")
+    if not isinstance(text, str):
+        raise AttributeError("text must be a string")
+    if not text:
+        raise AttributeError("text must be non-empty")
+
     for element in elements:
         if element.text == text:
             log.debug(element.text)
@@ -127,8 +130,8 @@ def find_from_elements(driver=None, field=None, text=None):
             break
 
     if return_element is None:
-        raise NoSuchElementException("Element designed by field '{}' and text '{}'"
-                                     " could not be located.".format(field, text))
+        raise NoSuchElementException(f"Element designed by field '{field}' and text '{text}'"
+                                     " could not be located.")
     else:
         actions = ActionChains(driver)
         actions.move_to_element(return_element)
