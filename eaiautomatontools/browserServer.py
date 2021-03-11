@@ -7,6 +7,7 @@ import tempfile
 from shutil import rmtree
 from datetime import datetime
 from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
 from webdriver_manager.chrome import ChromeDriverManager
 from webdriver_manager.firefox import GeckoDriverManager
 from webdriver_manager.microsoft import EdgeChromiumDriverManager
@@ -130,14 +131,26 @@ class BrowserServer:
         # todo use the data in order to launch the expected webdriver
         if self.browser_name == "safari":
             self.__webdriver = self.__driver_switcher()[self.browser_name](executable_path=self.driver_path)
+        elif self.browser_name == "chrome":
+            # Hack https://stackoverflow.com/questions/64927909/
+            # failed-to-read-descriptor-from-node-connection-a-device-attached-to-the-system
+            option = Options()
+            option.add_experimental_option('excludeSwitches', ['enable-logging'])
+            self.__webdriver = \
+                self.__driver_switcher()[self.browser_name](
+                    executable_path=self.__webdriver_switcher()[self.browser_name]().install(),
+                    options=option
+                )
+
         elif self.browser_name != "safari" and self.browser_name is not None:
             self.__webdriver = \
                 self.__driver_switcher()[self.browser_name](
                     executable_path=self.__webdriver_switcher()[self.browser_name]().install())
-            self.__launched = True
+
         else:
             raise AttributeError("You must set a browser name. "
                                  f"Use one of '{self.__authorized_name_version}'")
+        self.__launched = True
         return 0
 
     def close(self):

@@ -1,4 +1,4 @@
-automatontools.actions.click_element
+eaiautomatontools.actions.click_element
 =======================
 Present the action utilities for Selenium automaton.
 The click_element method will perform a mouse left click action.

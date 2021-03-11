@@ -1,4 +1,4 @@
-# automatontools.browserServer
+# eaiautomatontools.browserServer
 
 Present the browserServer utility for Selenium automaton.
 

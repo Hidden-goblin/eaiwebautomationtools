@@ -1,4 +1,4 @@
-# automatontools.finders.find_element
+# eaiautomatontools.finders.find_element
 
 Present the finder utilities for Selenium automaton.
 

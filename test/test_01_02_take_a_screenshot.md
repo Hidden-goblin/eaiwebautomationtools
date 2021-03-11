@@ -1,4 +1,4 @@
-# automatontools.take_a_screenshot
+# eaiautomatontools.take_a_screenshot
 
 Present the screenshot utility for Selenium automaton.
 

@@ -1,4 +1,4 @@
-automatontools.alerts.intercept_alert
+eaiautomatontools.alerts.intercept_alert
 =======================
 Present the alert utilities for Selenium automaton.
 The intercept_alert method catches an alert popup (alert, confirm or prompt) and interact with it.

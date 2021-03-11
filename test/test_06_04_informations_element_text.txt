@@ -1,4 +1,4 @@
-automatontools.information.element_text
+eaiautomatontools.information.element_text
 =======================
 Present the information utilities for Selenium automaton.
 The element_text method returns:

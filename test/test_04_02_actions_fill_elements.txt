@@ -1,4 +1,4 @@
-automatontools.actions.fill_elements
+eaiautomatontools.actions.fill_elements
 =======================
 Present the action utilities for Selenium automaton.
 The fill_elements method try to locate elements and fill them with the value stored in data. We assume each element can receive a text.

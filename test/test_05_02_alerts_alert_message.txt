@@ -1,4 +1,4 @@
-automatontools.alerts.alert_message
+eaiautomatontools.alerts.alert_message
 =======================
 Present the alerts utilities for Selenium automaton.
 The alert_message method return the alert message.

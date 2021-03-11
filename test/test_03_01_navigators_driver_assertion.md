@@ -1,31 +1,32 @@
-automatontools.navigators
-=======================
+# eaiautomatontools.navigators
+
 Present the navigators utilities for Selenium automaton.
 This document will only present the assertion behaviour on the driver for navigators functions
 
 
-Background
-------------------------
-Import the navigators utilities
-    >>> from automatontools.navigators import go_to_window, go_to_url, enter_frame
+## Background
 
-Assertion on go_to_window
--------------------------
+Import the navigators utilities
+
+    >>> from eaiautomatontools.navigators import go_to_window, go_to_url, enter_frame
+
+## Assertion on go_to_window
+
     >>> go_to_window(title='My Page')
     Traceback (most recent call last):
     ...
     AssertionError: Driver is expected.
 
 
-Assertion on go_to_url
--------------------------
+## Assertion on go_to_url
+
     >>> go_to_url(url="http://google.com")
     Traceback (most recent call last):
     ...
     AssertionError: Driver is expected.
 
-Assertion on enter_frame
--------------------------
+## Assertion on enter_frame
+
     >>> enter_frame(field={"type":"id","value":"myFrame"})
     Traceback (most recent call last):
     ...

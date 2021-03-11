@@ -1,4 +1,4 @@
-# automatontools.finders.find_from_elements
+# eaiautomatontools.finders.find_from_elements
 
 Present the finder utilities for Selenium automaton.
 The find_from_elements method try to locate an element from a list with its text.

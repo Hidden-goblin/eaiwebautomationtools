@@ -1,4 +1,4 @@
-automatontools.information.is_alert_present
+eaiautomatontools.information.is_alert_present
 =======================
 Present the information utilities for Selenium automaton.
 The is_alert_present method return True if an alert is present.

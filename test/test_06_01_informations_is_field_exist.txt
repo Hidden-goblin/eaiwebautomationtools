@@ -1,4 +1,4 @@
-automatontools.information.is_field_exist
+eaiautomatontools.information.is_field_exist
 =======================
 Present the information utilities for Selenium automaton.
 The is_field_exist method return a web element if the field is found or None if not found.

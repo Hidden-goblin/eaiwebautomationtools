@@ -1,4 +1,4 @@
-automatontools.information.is_field_contains_text
+eaiautomatontools.information.is_field_contains_text
 =======================
 Present the information utilities for Selenium automaton.
 The is_field_contains_text method return True if the field or its value contains the text.

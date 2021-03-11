@@ -1,4 +1,4 @@
-automatontools.actions.set_checkbox
+eaiautomatontools.actions.set_checkbox
 =======================
 Present the action utilities for Selenium automaton.
 The set_checkbox method will update the status of the checkbox to match the expected one.
