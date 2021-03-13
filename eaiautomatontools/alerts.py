@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
-from selenium.common.exceptions import ElementNotSelectableException, NoAlertPresentException
+from selenium.common.exceptions import ElementNotSelectableException, NoAlertPresentException, \
+    ElementNotInteractableException
 from .drivers_tools import web_drivers_tuple
 
 
@@ -55,6 +56,9 @@ def intercept_alert(driver=None, messages=None, accept=True, value=None):
         raise ElementNotSelectableException(
             "Can't fill the alert popup with '{}' as there is no "
             "input field.".format(value)) from None
+    except ElementNotInteractableException as not_interactable:
+        logging.error(not_interactable)
+        raise ElementNotInteractableException("Cannot found an input field") from None
     except NoAlertPresentException as no_alert:
         logging.error(
             "alerts.intercept_alert can't interact with an alert as there is no "

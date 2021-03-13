@@ -1,11 +1,11 @@
-eaiautomatontools.information.is_alert_present
-=======================
+# eaiautomatontools.information.is_alert_present
+
 Present the information utilities for Selenium automaton.
 The is_alert_present method return True if an alert is present.
 
 
-Background
-------------------------
+## Background
+
 Launch a test web server serving controlled web pages on localhost port 8081
 
 Use the python resources server.
@@ -27,29 +27,38 @@ Use a default browser such as Chrome in 32 bit version
     >>> myWebDriver.browser_name = "chrome"
 
 Serve the web driver
+
     >>> myWebDriver.serve()
+    <BLANKLINE>
+    <BLANKLINE>
     0
 
 Open the form test page
+
     >>> myWebDriver.go_to("http://127.0.0.1:8081")
     0
 
 Import the fill field tool
+
     >>> from eaiautomatontools.actions import click_element
 
 Import the information tool
+
     >>> from eaiautomatontools.information import is_alert_present
 
 Import the alert tool
+
     >>> from eaiautomatontools.alerts import intercept_alert
 
-Nominal case: give a web driver
-------------------------------------
-a - No alert present.
+## Nominal case: give a web driver
+
+### No alert present.
+
     >>> is_alert_present(driver=myWebDriver.webdriver)
     False
 
-b - An alert is present.
+### An alert is present.
+
     >>> click_element(driver=myWebDriver.webdriver, field={"type":"id", "value":"button_alert"})
     0
 
@@ -57,17 +66,18 @@ b - An alert is present.
     True
 
 
-Assertions
-------------------------------------
+## Assertions
+
 The web driver is mandatory
+
     >>> is_alert_present()
     Traceback (most recent call last):
     ...
     AssertionError: Driver is expected.
 
 
-Teardown
-------------------------------
+## Teardown
+
     >>> myWebDriver.close()
     0
 

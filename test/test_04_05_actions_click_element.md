@@ -1,10 +1,10 @@
-eaiautomatontools.actions.click_element
-=======================
+# eaiautomatontools.actions.click_element
+
 Present the action utilities for Selenium automaton.
 The click_element method will perform a mouse left click action.
 
-Background
-------------------------
+## Background
+
 Launch a test web server serving controlled web pages on localhost port 8081
 
 Use the python resources server.
@@ -26,22 +26,29 @@ Use a default browser such as Chrome in 32 bit version
     >>> myWebDriver.browser_name = "chrome"
 
 Serve the web driver
+
     >>> myWebDriver.serve()
+    <BLANKLINE>
+    <BLANKLINE>
     0
 
 Open the form test page
+
     >>> myWebDriver.go_to("http://127.0.0.1:8081")
     0
 
 Import the find_element tool
+
     >>> from eaiautomatontools.finders import find_element
 
 Import the set_checkbox tool
+
     >>> from eaiautomatontools.actions import click_element
 
-Nominal case: give a web driver, give a valid field
----------------------------
+## Nominal case: give a web driver, give a valid field
+
 You can click a link
+
     >>> click_element(driver=myWebDriver.webdriver,field={'type':'id','value':'tables'})
     0
 
@@ -49,39 +56,43 @@ You can click a link
     0
 
 You can even click a div
+
     >>> click_element(driver=myWebDriver.webdriver,field={'type':'id','value':'first'})
     0
 
-Assertions
-------------------------------------
-1- The web driver is missing.
+## Assertions
+
+###  The web driver is missing.
     >>> click_element(field={"type":"id", "value":"name"})
     Traceback (most recent call last):
     ...
     AssertionError: Driver is expected.
 
-2- The field is not valid.
-    a- Incorrect type key value.
+### The field is not valid.
+
+#### Incorrect type key value.
+
     >>> click_element(driver=myWebDriver.webdriver, field={"type":"idl", "value":"name"})
     Traceback (most recent call last):
     ...
     AssertionError: Field '{'type': 'idl', 'value': 'name'}' is not a valid field
 
-    b- Incorrect keys value.
+#### Incorrect keys value.
+
     >>> click_element(driver=myWebDriver.webdriver, field={"typ":"id", "value":"name"})
     Traceback (most recent call last):
     ...
     AssertionError: Field '{'typ': 'id', 'value': 'name'}' is not a valid field
 
-Exceptions
--------------------------------------
+## Exceptions
+
     >>> click_element(driver=myWebDriver.webdriver,field={'type':'id','value':'tab'})
     Traceback (most recent call last):
     ...
     Exception: Element designed by field '{'type': 'id', 'value': 'tab'}' could not be located.
 
-Teardown
-------------------------------
+## Teardown
+
     >>> myWebDriver.close()
     0
 

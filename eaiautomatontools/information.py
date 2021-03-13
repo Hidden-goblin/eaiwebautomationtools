@@ -195,3 +195,14 @@ def is_checkbox_checked(driver=None, field=None, is_angular=False):
         return bool(element.get_attribute("ng-reflect-checked"))
     else:
         return bool(element.get_attribute("checked"))
+
+
+def retrieve_tabular(driver=None, field=None) -> list:
+    """
+    Return the tabular as a list of elements.
+    Elements are either lists or dictionaries depending on the presence of headers
+    :param driver: a selenium web driver
+    :param field: a dictionary
+    :return: list
+    """
+    pass

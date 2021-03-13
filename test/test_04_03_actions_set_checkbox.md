@@ -1,10 +1,10 @@
-eaiautomatontools.actions.set_checkbox
-=======================
+# eaiautomatontools.actions.set_checkbox
+
 Present the action utilities for Selenium automaton.
 The set_checkbox method will update the status of the checkbox to match the expected one.
 
-Background
-------------------------
+## Background
+
 Launch a test web server serving controlled web pages on localhost port 8081
 
 Use the python resources server.
@@ -25,72 +25,87 @@ Use a default browser such as Chrome in 32 bit version
 
     >>> myWebDriver.browser_name = "chrome"
 
+
 Serve the web driver
+
     >>> myWebDriver.serve()
+    <BLANKLINE>
+    <BLANKLINE>
     0
 
 Open the form test page
+
     >>> myWebDriver.go_to("http://127.0.0.1:8081/forms.html")
     0
 
 Import the find_element tool
+
     >>> from eaiautomatontools.finders import find_element
 
 Import the set_checkbox tool
+
     >>> from eaiautomatontools.actions import set_checkbox
 
-Nominal case: all fields are valid
-----------------------------
+## Nominal case: all fields are valid
+
     >>> set_checkbox(driver=myWebDriver.webdriver, field={"type":"id","value":"check"}, is_checked=True)
     0
 
-Assertion errors
-----------------------------
-1- The web driver is not given.
+## Assertion errors
+
+### The web driver is not given.
+
     >>> set_checkbox(field={"type":"id","value":"check"}, is_checked=True)
     Traceback (most recent call last):
     ...
     AssertionError: Driver is expected.
 
-2- The field is not valid
-    a- The keys are not one of "type" or "value"
+### The field is not valid
+
+#### The keys are not one of "type" or "value"
+
     >>> set_checkbox(driver=myWebDriver.webdriver, field={"typ":"id","value":"check"}, is_checked=True)
     Traceback (most recent call last):
     ...
     AssertionError: Field '{'typ': 'id', 'value': 'check'}' is not a valid field
 
-    b- Incorrect type key value not in
+#### Incorrect type key value not in
+
     >>> set_checkbox(driver=myWebDriver.webdriver, field={"type":"if","value":"check"}, is_checked=True)
     Traceback (most recent call last):
     ...
     AssertionError: Field '{'type': 'if', 'value': 'check'}' is not a valid field
 
-    3- is_checked is a boolean
+#### is_checked is a boolean
+
     >>> set_checkbox(driver=myWebDriver.webdriver, field={"type":"id","value":"check"}, is_checked='True')
     Traceback (most recent call last):
     ...
     AssertionError: is_checked is expected to be a boolean.
 
-Exception errors
--------------------------------
-1- The element can't be found
+## Exception errors
+
+### The element can't be found
+
     >>> set_checkbox(driver=myWebDriver.webdriver, field={"type":"id","value":"checkbox"}, is_checked=True)
     Traceback (most recent call last):
     ...
     Exception: Element designed by field '{'type': 'id', 'value': 'checkbox'}' could not be located.
 
-2- The element can't be checked
+### The element can't be checked
+
     >>> set_checkbox(driver=myWebDriver.webdriver, field={"type":"id","value":"name"}, is_checked=True)
     Traceback (most recent call last):
     ...
     Exception: The element '{'type': 'id', 'value': 'name'}' can't be set to the expected status 'True'.
 
-    Beware! Setting to False a non checkable element cast no error
+Beware! Setting to False a non checkable element cast no error
+
     >>> set_checkbox(driver=myWebDriver.webdriver, field={"type":"id","value":"name"}, is_checked=False)
     0
 
-Teardown
-------------------------------
+## Teardown
+
     >>> myWebDriver.close()
     0
 

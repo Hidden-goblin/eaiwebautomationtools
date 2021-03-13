@@ -1,12 +1,12 @@
-eaiautomatontools.actions.fill_elements
-=======================
+# eaiautomatontools.actions.fill_elements
+
 Present the action utilities for Selenium automaton.
 The fill_elements method try to locate elements and fill them with the value stored in data. We assume each element can receive a text.
 It will raise an exception if it's not the case.
 This method is interesting when fields and data are stored as dictionaries.
 
-Background
-------------------------
+## Background
+
 Launch a test web server serving controlled web pages on localhost port 8081
 
 Use the python resources server.
@@ -28,58 +28,69 @@ Use a default browser such as Chrome in 32 bit version
     >>> myWebDriver.browser_name = "chrome"
 
 Serve the web driver
+
     >>> myWebDriver.serve()
+    <BLANKLINE>
+    <BLANKLINE>
     0
 
 Open the form test page
+
     >>> myWebDriver.go_to("http://127.0.0.1:8081/forms.html")
     0
 
 Import the find_element tool
+
     >>> from eaiautomatontools.finders import find_element
 
 Import the fill_element tool
+
     >>> from eaiautomatontools.actions import fill_elements
 
 
 
-Nominal case: give a web driver, give a valid fields
-------------------------------------
+## Nominal case: give a web driver, give a valid fields
+
 We will fill the username field with "my name" and the email field with "my.email@test.com".
+
     >>> fill_elements(driver=myWebDriver.webdriver, fields={"username":{"type":"id","value":"name"}, "email":{"type":"id","value":"email"}},data={"username":"my name","email":"my.email@test.com"})
     0
 
-Assertions
-------------------------------------
-1- The web driver is mandatory
+## Assertions
+
+### The web driver is mandatory
+
     >>> fill_elements(fields={"username":{"type":"id","value":"name"}, "email":{"type":"id","value":"email"}},data={"username":"my name","email":"my.email@test.com"})
     Traceback (most recent call last):
     ...
     AssertionError: Driver is expected.
 
-2- Fields dictionary and data dictionary contain the same keys.
+### Fields dictionary and data dictionary contain the same keys.
+
     >>> fill_elements(driver=myWebDriver.webdriver, fields={"user":{"type":"id","value":"name"}, "email":{"type":"id","value":"email"}},data={"username":"my name","email":"my.email@test.com"})
     Traceback (most recent call last):
     ...
     AssertionError: Missing fields for the given data. Data keys 'dict_keys(['username', 'email'])'. Fields keys 'dict_keys(['user', 'email'])'
 
-Exceptions
--------------------------------------
-1- One field doesn't exist on the UI
+## Exceptions
+
+### One field doesn't exist on the UI
+
     >>> fill_elements(driver=myWebDriver.webdriver, fields={"username":{"type":"id","value":"uname"}, "email":{"type":"id","value":"email"}},data={"username":"my name","email":"my.email@test.com"})
     Traceback (most recent call last):
     ...
-    Exception: eaiautomatontools.actions.fill_element raised an exception. Exception is 'Element designed by field '{'type': 'id', 'value': 'uname'}' could not be located.'
+    Exception: actions.fill_element raised an exception. Exception is 'Element designed by field '{'type': 'id', 'value': 'uname'}' could not be located.'
 
-2- One field isn't user-editable
+### One field isn't user-editable
+
     >>> fill_elements(driver=myWebDriver.webdriver, fields={"username":{"type":"id","value":"lab-name"}, "email":{"type":"id","value":"email"}},data={"username":"my name","email":"my.email@test.com"})
     Traceback (most recent call last):
     ...
     selenium.common.exceptions.InvalidElementStateException: Message: Element '{'type': 'id', 'value': 'lab-name'}' must be user-editable
     <BLANKLINE>
 
-Teardown
-------------------------------
+## Teardown
+
     >>> myWebDriver.close()
     0
 
