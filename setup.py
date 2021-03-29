@@ -30,7 +30,7 @@ setup(
     ],
     install_requires=[
         'selenium>=3.14',
-        'Pillow>=6.0.0'
+        'Pillow>=8.1.1'
     ],
     python_requires='>=3.7, !=2.*',
     # packages=find_packages(),

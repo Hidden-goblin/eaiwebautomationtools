@@ -197,12 +197,24 @@ def is_checkbox_checked(driver=None, field=None, is_angular=False):
         return bool(element.get_attribute("checked"))
 
 
-def retrieve_tabular(driver=None, field=None) -> list:
+def retrieve_tabular(driver=None, field=None, row_and_col=("tr", "td", "th")) -> list:
     """
     Return the tabular as a list of elements.
     Elements are either lists or dictionaries depending on the presence of headers
     :param driver: a selenium web driver
+    :param row_and_col: a tuple of row and col tags plus header tag. Defaulted to ('tr', 'td', 'th').
+     Please mind the order. ROW, COL, COL HEADER
     :param field: a dictionary
     :return: list
     """
-    pass
+    tabular = find_element(driver, field)
+    rows = tabular.find_elements_by_tag_name(row_and_col[0])
+    tabular_as_list = list()
+
+    for row in rows:
+        columns = row.find_elements_by_tag_name(row_and_col[1])
+        if not columns:
+            columns = row.find_elements_by_tag_name(row_and_col[2])
+        tabular_as_list.append([column.text for column in columns])
+
+    return tabular_as_list
