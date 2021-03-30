@@ -14,12 +14,13 @@ def is_field_exist(driver=None, field=None, until=5):
     :param driver: a selenium web driver
     :param field: a dictionary
     :param until: an int as the wait time
-    :raise AssertionError: driver isn't of the expected type
+    :raise TypeError: driver isn't of the expected type
     :return: a web element if exist, None otherwise
     """
     try:
-        assert driver is not None and isinstance(driver, web_drivers_tuple()),\
-            "Driver is expected."
+        if driver is None or not isinstance(driver, web_drivers_tuple()):
+            raise TypeError("Driver is expected as a WebDriver")
+
         switcher = {
             "id": By.ID,
             "name": By.NAME,
@@ -33,14 +34,14 @@ def is_field_exist(driver=None, field=None, until=5):
 
         return WebDriverWait(driver, until).until(
             EC.presence_of_element_located((switcher[field["type"]], field["value"])))
-    except AssertionError as assertion:
+    except TypeError as assertion:
         logging.error("information.is_field_exist raised an assertion with following"
-                      " input driver:'{}', field:'{}' and until:'{}'. "
-                      "Assertion is '{}'".format(driver, field, until, assertion.args))
+                      f" input driver:'{driver}', field:'{field}' and until:'{until}'. "
+                      f"Assertion is '{assertion.args}'")
         raise
     except TimeoutException:
-        logging.warning("""information.is_field_exist raised a TimeoutException for
-         the following field '{}' """.format(field))
+        logging.warning(f"information.is_field_exist raised a TimeoutException for "
+                        f"the following field '{field}'")
         return None
 
 
@@ -178,6 +179,9 @@ def where_am_i(driver=None):
     :param driver: a selenium web driver
     :return: String. The current URL
     """
+    if driver is None or not isinstance(driver, web_drivers_tuple()):
+        raise TypeError("Driver is expected as a WebDriver")
+
     return driver.current_url
 
 

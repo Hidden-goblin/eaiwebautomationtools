@@ -20,7 +20,7 @@ from .actions import fill_element, fill_elements, select_in_dropdown, set_checkb
 from .alerts import alert_message, intercept_alert
 from .information import is_alert_present, is_field_exist, is_field_contains_text, \
     element_text, is_field_displayed, is_field_enabled, how_many_windows, where_am_i, \
-    is_checkbox_checked
+    is_checkbox_checked, retrieve_tabular
 from .drivers_tools import fullpage_screenshot
 
 log = logging.getLogger(__name__)
@@ -309,6 +309,9 @@ class BrowserServer:
 
     def how_many_windows(self):
         return how_many_windows(driver=self.webdriver)
+
+    def retrieve_tabular(self, field=None, row_and_col=("tr", "td", "th")):
+        return retrieve_tabular(driver=self.webdriver, field=field, row_and_col=row_and_col)
 
     # TODO add unit test
     def where_am_i(self):
