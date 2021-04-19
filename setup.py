@@ -1,15 +1,16 @@
 # -*- coding: utf-8 -*-
-from setuptools import setup
+from setuptools import find_packages, setup
 
 with open("README.md", "r") as file:
     long_description = file.read()
 
 setup(
     name="eaiautomatontools",
-    version="1.0.2",
+    version="1.0.3",
     description="UI utilities in order to abstract selenium commands",
     long_description=long_description,
     long_description_content_type="text/markdown",
+    url="https://github.com/Hidden-goblin/eaiwebautomationtools",
     classifiers=[  # Optional
         # How mature is this project? Common values are
         #   3 - Alpha
@@ -30,12 +31,13 @@ setup(
     ],
     install_requires=[
         'selenium>=3.14',
-        'Pillow>=8.1.1'
+        'Pillow>=8.1.1',
+        'webdriver-manager'
     ],
     python_requires='>=3.7, !=2.*',
-    # packages=find_packages(),
-    # include_package_data=True,
-    package_dir={'': 'eaiautomatontools'},
+    packages=find_packages(),
+    include_package_data=True,
+    # package_dir={'': 'eaiautomatontools'},
     author="Eric Aïvayan",
     author_email="eric.aivayan@free.fr"
 )

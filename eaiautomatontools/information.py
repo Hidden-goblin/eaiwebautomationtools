@@ -59,12 +59,9 @@ def is_field_contains_text(driver=None, field=None, text=None):
         assert driver is not None and isinstance(driver, web_drivers_tuple()),\
             "Driver is expected."
         element = is_field_exist(driver=driver, field=field)
-        if (element.text is not None and text in element.text) or (
+        return (element.text is not None and text in element.text) or (
                 element.get_attribute("value") is not None
-                and text in element.get_attribute("value")):
-            return True
-        else:
-            return False
+                and text in element.get_attribute("value"))
     except AssertionError as assertion:
         logging.error("information.is_field_exist raised an assertion with "
                       "following input driver:'{}', field:'{}' and text:'{}'. "
@@ -161,16 +158,13 @@ def is_field_enabled(driver=None, field=None, attribute=None):
             Attribute string otherwise
     """
     element = is_field_exist(driver=driver, field=field)
-    if attribute is None:
-        if element is not None:
-            return element.is_enabled()
-        else:
-            return False
-    else:
-        if element is not None:
+    if element is not None:
+        if attribute is not None:
             return element.get_attribute(attribute)
         else:
-            return False
+            return element.is_enabled()
+    else:
+        return False
 
 
 def where_am_i(driver=None):

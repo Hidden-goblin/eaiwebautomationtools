@@ -40,19 +40,16 @@ class BrowserServer:
         # Definition of private attributes and references
         # All strings allowed for the browser name and version
         self.__authorized_name_version = ["chrome", "firefox", "opera",
-                                          "edge", "safari"]
+                                          "edge", "safari", "headless-chrome"]
         # Browser window's status
         self.__launched = False
 
         # Screenshot save folder
         self.__temp_save_to = os.path.normpath(os.path.join(tempfile.gettempdir(),
                                                             "automaton_screenshots"))
-        if not os.path.exists(self.__temp_save_to):
-            os.makedirs(self.__temp_save_to)
-        else:
+        if os.path.exists(self.__temp_save_to):
             rmtree(self.__temp_save_to)
-            os.makedirs(self.__temp_save_to)
-
+        os.makedirs(self.__temp_save_to)
         log.debug(self.__temp_save_to)
 
         # Definition of private attributes
@@ -99,6 +96,7 @@ class BrowserServer:
         """
         return {
             "chrome": webdriver.Chrome,
+            "headless-chrome": webdriver.Chrome,
             "firefox": webdriver.Firefox,
             "edge": webdriver.Edge,
             "safari": webdriver.Safari,
@@ -113,6 +111,7 @@ class BrowserServer:
         """
         return {
             "chrome": ChromeDriverManager,
+            "headless-chrome": ChromeDriverManager,
             "firefox": GeckoDriverManager,
             "edge": EdgeChromiumDriverManager,
             "opera": OperaDriverManager
@@ -141,8 +140,16 @@ class BrowserServer:
                     executable_path=self.__webdriver_switcher()[self.browser_name]().install(),
                     options=option
                 )
-
-        elif self.browser_name != "safari" and self.browser_name is not None:
+        elif self.browser_name == "headless-chrome":
+            option = Options()
+            option.add_experimental_option('excludeSwitches', ['enable-logging'])
+            option.headless = True
+            self.__webdriver = \
+                self.__driver_switcher()[self.browser_name](
+                    executable_path=self.__webdriver_switcher()[self.browser_name]().install(),
+                    options=option
+                )
+        elif self.browser_name is not None:
             self.__webdriver = \
                 self.__driver_switcher()[self.browser_name](
                     executable_path=self.__webdriver_switcher()[self.browser_name]().install())
@@ -164,8 +171,7 @@ class BrowserServer:
         return 0
 
     def full_screenshot(self, filename: str):
-        result = fullpage_screenshot(self.webdriver, filename)
-        return result
+        return fullpage_screenshot(self.webdriver, filename)
 
     def take_a_screenshot(self, save_to: str = None, is_full_screen: bool = True):
         """
@@ -232,11 +238,10 @@ class BrowserServer:
         :param field:
         :return:
         """
-        if "parent" in field:
-            element = self.find_element(field=field["parent"])
-            return find_sub_element_from_element(element, field=field)
-        else:
+        if "parent" not in field:
             return self.find_element(field=field)
+        element = self.find_element(field=field["parent"])
+        return find_sub_element_from_element(element, field=field)
 
     # Actions
 
