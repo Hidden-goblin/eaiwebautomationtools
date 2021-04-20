@@ -38,8 +38,11 @@ You can ask the browserServer to take a screenshot of the current page and save 
 temporary folder under automaton_screenshots/screenshot-<millisecond timestamp>.png file and will take the full page
 not only the displayed part.
 
-    >>> myBrowser.take_a_screenshot()
-    0
+    >>> from pathlib import Path
+    >>> filename = myBrowser.take_a_screenshot()
+    >>> path = Path(filename)
+    >>> path.exists()
+    True
 
 You can specify the folder you want to save the file to. The path should be valid and accessible.
 
@@ -54,8 +57,10 @@ Please note the temp folder is cleaned as soon as you recreate a new BrowserServ
 
 You can choose to take a screenshot of a full page or partial. By default the full page will be used.
 
-    >>> myBrowser.take_a_screenshot(save_to="test/")
-    0
+    >>> filename = myBrowser.take_a_screenshot(save_to="test/")
+    >>> path = Path(filename)
+    >>> path.exists()
+    True
 
 Import glob for easy file list.
 
@@ -78,8 +83,10 @@ Remove the screenshot (it's cleaner isn't it?)
 
 You can specify you want full page screenshot too
 
-    >>> myBrowser.take_a_screenshot(save_to="test/", is_full_screen=True)
-    0
+    >>> filename = myBrowser.take_a_screenshot(save_to="test/", is_full_screen=True)
+    >>> path = Path(filename)
+    >>> path.exists()
+    True
 
     >>> screenshot_list = glob.glob("test/screenshot-*.png")
 
@@ -87,8 +94,10 @@ You can specify you want full page screenshot too
 
 If the option is_full_screen (accepted boolean: 'True' or 'False') is not valid, the default value will be 'True'
 
-    >>> myBrowser.take_a_screenshot(save_to="test/", is_full_screen='bad value')
-    0
+    >>> filename = myBrowser.take_a_screenshot(save_to="test/", is_full_screen='bad value')
+    >>> path = Path(filename)
+    >>> path.exists()
+    True
 
 Check the screenshot dimension and delete it.
 
@@ -108,8 +117,10 @@ The screenshot resolution is: width= 800px and height=1824px
 To only take a partial screenshot, who will save the displayed frame you need to specify it with the
 option full_screen in take_a_screenshot. This function used selenium webdriver code.
 
-    >>> myBrowser.take_a_screenshot(save_to="test/", is_full_screen=False)
-    0
+    >>> filename = myBrowser.take_a_screenshot(save_to="test/", is_full_screen=False)
+    >>> path = Path(filename)
+    >>> path.exists()
+    True
 
 Check the screenshot dimension and remove it.
 

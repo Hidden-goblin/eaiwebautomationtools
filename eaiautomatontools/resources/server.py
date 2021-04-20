@@ -1,5 +1,6 @@
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from os import sep, path
+from pathlib import Path
 import threading
 from logging import getLogger
 
@@ -19,7 +20,8 @@ class TestHTTPServerRequestHandler(BaseHTTPRequestHandler):
 
     @property
     def folder(self):
-        return path.split(path.realpath(__file__))[0]
+        folder_path = Path(__file__)
+        return folder_path.parent
 
     @folder.setter
     def folder(self, folder):
@@ -61,7 +63,9 @@ class TestHTTPServerRequestHandler(BaseHTTPRequestHandler):
                 # Open the static file requested and send it
                 log.debug("current dir is '{}'".format(path.realpath(__file__)))
                 log.debug("Before join '{}'".format(self.folder))
-                file_name = "{}{}{}".format(self.folder, sep, self.path)
+                # file_name = "{}{}{}".format(self.folder, sep, self.path)
+                file_name = self.folder / self.path.lstrip("/")
+                # print(file_name)
                 log.debug("Filename '{}'".format(file_name))
                 with open(file_name, "br") as f:
                     self.send_response(200)

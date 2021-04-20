@@ -39,8 +39,8 @@ class BrowserServer:
     def __init__(self):
         # Definition of private attributes and references
         # All strings allowed for the browser name and version
-        self.__authorized_name_version = ["chrome", "firefox", "opera",
-                                          "edge", "safari", "headless-chrome"]
+        self.__authorized_name_version = ("chrome", "firefox", "opera",
+                                          "edge", "safari", "headless-chrome")
         # Browser window's status
         self.__launched = False
 
@@ -72,7 +72,8 @@ class BrowserServer:
         if name.casefold() in self.__authorized_name_version:
             self.__browser_name = name.casefold()
         else:
-            raise ValueError(f"Unknown browser name. Get {name.casefold()} instead of {self.__authorized_name_version}")
+            raise ValueError(f"Unknown browser name. "
+                             f"Get {name.casefold()} instead of {self.__authorized_name_version}")
 
     @property
     def driver_path(self):
@@ -124,12 +125,14 @@ class BrowserServer:
     def serve(self):
         """
         Create the webdriver instance
-        Todo incorportate the outside module resources locator
+        Todo incorporate the outside module resources locator
+        TODO Handle the case where you don't want to use the webdriver manager
         :return: 0 if success
         """
         # todo use the data in order to launch the expected webdriver
         if self.browser_name == "safari":
-            self.__webdriver = self.__driver_switcher()[self.browser_name](executable_path=self.driver_path)
+            self.__webdriver = self.__driver_switcher()[self.browser_name](
+                executable_path=self.driver_path)
         elif self.browser_name == "chrome":
             # Hack https://stackoverflow.com/questions/64927909/
             # failed-to-read-descriptor-from-node-connection-a-device-attached-to-the-system
@@ -200,7 +203,7 @@ class BrowserServer:
                 raise IOError("The screenshot could not be done."
                               " Please check if the file path is correct."
                               " Get '{}'".format(repr(result)))
-            return 0
+            return os.path.realpath(filename)
         except IOError as io_error:
             log.error(f"Screenshot raised an IO error '{io_error.args[0]}'")
             raise IOError(io_error.args[0]) from None

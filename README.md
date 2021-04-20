@@ -8,22 +8,18 @@ System requirements
 
 This module has been developed with Python 3.7 and uses selenium version 3.14.
 
-BronwserServer object
+BrowserServer object
 =====================
 
-The BrowserServer object uses the selenium webdrivers executables in order to communicate with a browser.
+The BrowserServer is packaged with the webdriver-manager. You can require:
 
-Currently the module is wrapped with
+- chrome
+- headless-chrome
+- firefox
+- edge
+- opera
+- safari (it's not managed by webdriver-manager: you have to provide the path to the webdriver)
 
--   ChromeDriver2.43 for chrome version 69-71
--   geckodriver-v0.23.0 for firefox 32 and 64 bits
--   MicrosoftWebDriver release 17134 for edge 17.17134
--   IEDriverServer version 3.14.0 for Internet Explorer
-
-The mapping is as following:
-
-{  
-"chrome": { "32": "chrome/chromedriver.exe"}, "firefox":{ "32": "firefox/32/geckodriver.exe", "64": "firefox/64/geckodriver.exe"}, "ie":{ "32":"ie/32/IEDriverServer.exe", "64":"ie/64/IEDriverServer.exe"}, "edge":{ "32":"edge/MicrosoftWebDriver.exe"}}
 
 Mapping update
 --------------
