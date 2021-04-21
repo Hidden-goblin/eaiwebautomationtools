@@ -1,13 +1,14 @@
 # Could held the webdriver instance so that we could interact with the browser.
 # -*- coding: utf-8 -*-
 import os.path
-import json
 import logging
 import tempfile
+from deprecated import deprecated
 from shutil import rmtree
 from datetime import datetime
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.remote.webelement import WebElement
 from webdriver_manager.chrome import ChromeDriverManager
 from webdriver_manager.firefox import GeckoDriverManager
 from webdriver_manager.microsoft import EdgeChromiumDriverManager
@@ -56,6 +57,10 @@ class BrowserServer:
         self.__webdriver = None  # The webdriver
         self.__browser_name = None  # The browser's name used
         self.__driver_path = None  # The path to the webdriver executable
+    
+    @property
+    def is_launched(self):
+        return self.__launched
 
     @property
     def webdriver(self):
@@ -69,11 +74,11 @@ class BrowserServer:
 
     @browser_name.setter
     def browser_name(self, name: str):
-        if name.casefold() in self.__authorized_name_version:
-            self.__browser_name = name.casefold()
-        else:
+        if name.casefold() not in self.__authorized_name_version:
             raise ValueError(f"Unknown browser name. "
                              f"Get {name.casefold()} instead of {self.__authorized_name_version}")
+        self.__browser_name = name.casefold()
+        self.__driver_path = None
 
     @property
     def driver_path(self):
@@ -136,26 +141,32 @@ class BrowserServer:
         elif self.browser_name == "chrome":
             # Hack https://stackoverflow.com/questions/64927909/
             # failed-to-read-descriptor-from-node-connection-a-device-attached-to-the-system
+            if self.__driver_path is None:
+                self.__driver_path = self.__webdriver_switcher()[self.browser_name]().install() 
             option = Options()
             option.add_experimental_option('excludeSwitches', ['enable-logging'])
             self.__webdriver = \
                 self.__driver_switcher()[self.browser_name](
-                    executable_path=self.__webdriver_switcher()[self.browser_name]().install(),
+                    executable_path=self.__driver_path,
                     options=option
                 )
         elif self.browser_name == "headless-chrome":
             option = Options()
             option.add_experimental_option('excludeSwitches', ['enable-logging'])
             option.headless = True
+            if self.__driver_path is None:
+                self.__driver_path = self.__webdriver_switcher()[self.browser_name]().install()
             self.__webdriver = \
                 self.__driver_switcher()[self.browser_name](
-                    executable_path=self.__webdriver_switcher()[self.browser_name]().install(),
+                    executable_path=self.__driver_path,
                     options=option
                 )
         elif self.browser_name is not None:
+            if self.__driver_path is None:
+                self.__driver_path = self.__webdriver_switcher()[self.browser_name]().install()
             self.__webdriver = \
                 self.__driver_switcher()[self.browser_name](
-                    executable_path=self.__webdriver_switcher()[self.browser_name]().install())
+                    executable_path=self.__driver_path)
 
         else:
             raise AttributeError("You must set a browser name. "
@@ -224,16 +235,22 @@ class BrowserServer:
         return go_to_window(driver=self.webdriver, handle=handle, title=title)
 
     # Finders
+    def find_element(self, field: dict = None, web_element: WebElement = None):
+        """Find element using the current webdriver or the provided WebElement"""
+        return find_element(driver=self.webdriver, field=field, web_element=web_element)
 
-    def find_element(self, field=None):
-        return find_element(driver=self.webdriver, field=field)
+    def find_elements(self, field: dict = None, web_element: WebElement = None):
+        """Find elements using the current webdriver or the provided WebElement"""
+        return find_elements(driver=self.webdriver, field=field, web_element=web_element)
 
-    def find_elements(self, field=None):
-        return find_elements(driver=self.webdriver, field=field)
+    def find_from_elements(self, field=None, text=None, web_element: WebElement = None):
+        """Find element from a list of elements based on the text (exact match)"""
+        return find_from_elements(driver=self.webdriver,
+                                  field=field,
+                                  text=text,
+                                  web_element=web_element)
 
-    def find_from_elements(self, field=None, text=None):
-        return find_from_elements(driver=self.webdriver, field=field, text=text)
-
+    @deprecated(version="1.0.5", reason="You should user find_element with a web_element")
     def find_sub_element_from_element(self, field=None):
         """
         Find the webelement contained in another webelement.

@@ -21,7 +21,7 @@ The BrowserServer is packaged with the webdriver-manager. You can require:
 - safari (it's not managed by webdriver-manager: you have to provide the path to the webdriver)
 
 
-Mapping update
+Mapping update (Deprecated)
 --------------
 
 You can update the mapping setting by using "update\_webdriver\_mapping(new\_mapping)" method.
@@ -32,7 +32,7 @@ The mapping indicate where the webdriver executable could be found.
 
 **Please mind** the browser list is "ie", "firefox","chrome", "edge" and "safari" in lower case, and the versions are "32" or "64" only.
 
-Choosing a webdriver
+Choosing a webdriver (Deprecated)
 --------------------
 
 Before using the BrowserServer, you must select a webdriver defined in the mapping by using  
@@ -64,9 +64,9 @@ The **type** is one of the following:
 -   xpath: the element xpath
 
 The **value** contains the actual value for the **type**. For example an element with the "id" type must have  
-the id's value to be correctly defined. In the same way an element with the "tag\_name" type and a value "div" may return all div on the web page.
+the id's value to be correctly defined. In the same way an element with the "tag_name" type and a value "div" may return all div on the web page.
 
-To avoid, as much as possible, this multi-definition you can add a **text** dictionary entry which try to locate the element with this exact text. **You may find an element with an empty text so use it with care.**
+To avoid, as much as possible, this multi-definition you can add a **text** dictionary key which try to locate the element with this exact text. **You may find an element with an empty text so use it with care.**
 
 Although the BrowserServer class is a must have, you can use the module spaces separately. I will quickly present here only the BrowserServer class method but the module spaces functions only add a "driver" attribute which hold the selemium web driver to use.
 
@@ -75,9 +75,9 @@ finders
 
 This module space is about finding and returning web element.
 
--   find\_element(field): return the first element which match the criteria
--   find\_elements(field): return all elements which match the criteria in a list
--   find\_from\_elements(field,text): return the first element which match the criteria and has the text.
+-   find\_element(field,\[web_element\]): return the first element which match the criteria. Use the web_element as base element in order to find nested element. 
+-   find\_elements(field, \[web_element\]): return all elements which match the criteria in a list. Use the web_element as base element in order to find nested element.
+-   find\_from\_elements(field,text, \[web_element\]): return the first element which match the criteria and has the text. Use the web_element as base element in order to find nested element.
 
 information
 -----------
@@ -106,16 +106,19 @@ alerts
 
 This module space is about the alert popups.
 
-- intercept\_alert(messages, accept, value): return 0 if successful. You can specify a list of message which one must be displayed on the alert, accept or reject the alert (Ok or dimiss) and enter a value where the alert prompt for a user input. - alert\_message(): return the alert message if an alert is displayed.
+- intercept\_alert(messages, accept, value): return 0 if successful. You can specify a list of message which one must be displayed on the alert, accept or reject the alert (Ok or dimiss) and enter a value where the alert prompt for a user input. 
+- alert\_message(): return the alert message if an alert is displayed.
 
 actions
 -------
 
 This module space is about filling, selecting and clicking on web element.
 
--   fill\_element(field,value): return 0 if successful, fill the field with the value
-
-- fill\_elements(fields, data): return 0 if successful, fill each field in the fields dictionary with the value hold in the data dictionary. You can have a larger fields dictionary than the data but each data entry must be found in the fields dictionary. - select\_in\_dropdown(field,visible\_text,value): return 0 if successful, select in the field dropdown the element either described by its visible text or its hidden value. - click\_element(field): return 0 if successful, perform a left click on the field. - set\_checked(field,is\_checked): return 0 if successful, set the check box field so that the is\_checked value is always true i.e. checked if is\_checked set to true and not checked if is\_checked set to false.
+- fill\_element(field,value): return 0 if successful, fill the field with the value
+- fill\_elements(fields, data): return 0 if successful, fill each field in the fields dictionary with the value hold in the data dictionary. You can have a larger fields dictionary than the data but each data entry must be found in the fields dictionary. 
+- select\_in\_dropdown(field,visible\_text,value): return 0 if successful, select in the field dropdown the element either described by its visible text or its hidden value. 
+- click\_element(field): return 0 if successful, perform a left click on the field. 
+- set\_checked(field,is\_checked): return 0 if successful, set the check box field so that the is\_checked value is always true i.e. checked if is\_checked set to true and not checked if is\_checked set to false.
 
 Other documentation
 ===================
@@ -133,6 +136,11 @@ To Do
 
 Release Notes
 =============
-
--   version 0.1: first release
+- version 1.0.5: Sorry for the interruption 
+    - use webdriver manager in order to retrieve webdrivers. 
+    - Enhance the webdriver handling.
+    - Allow providing a WebElement to find nested element(s).
+    - Enhance doctest coverage.
+    - Minor refactoring
+- version 0.1: first release
 
