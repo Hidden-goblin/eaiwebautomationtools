@@ -5,6 +5,8 @@ from time import sleep
 
 from PIL import Image
 from selenium import webdriver
+from selenium.webdriver import ActionChains
+from selenium.webdriver.remote.webelement import WebElement
 
 log = logging.getLogger(__name__)
 
@@ -47,6 +49,7 @@ def fullpage_screenshot(driver, file):
     previous = None
     part = 0
     for rectangle in rectangles:
+        # TODO Scroll to top saving the current position (?)
         if previous is not None:
             driver.execute_script("window.scrollTo({0}, {1})".format(rectangle[0], rectangle[1]))
             log.debug("Scrolled To ({0},{1})".format(rectangle[0], rectangle[1]))
@@ -71,3 +74,67 @@ def fullpage_screenshot(driver, file):
         return False
     log.info("Screenshot saved: {}".format(file))
     return True
+
+
+def move_to(driver=None, element: WebElement = None):
+    if driver is None or not isinstance(driver, web_drivers_tuple()):
+        log.error("Driver is expected")
+        raise AttributeError("Driver is expected")
+    if element is None or not isinstance(element, WebElement):
+        log.error("Element is expected")
+        raise AttributeError("Element is expected")
+    try:
+        if 'firefox' in driver.capabilities['browserName'] :
+            x = element.location['x']
+            y = element.location['y']
+            scroll_by_coord = 'window.scrollTo(%s,%s);' % (
+                x,
+                y
+            )
+            scroll_nav_out_of_way = 'window.scrollBy(0, -120);'
+            driver.execute_script(scroll_by_coord)
+            driver.execute_script(scroll_nav_out_of_way)
+        actions = ActionChains(driver)
+        actions.move_to_element(element)
+        actions.perform()
+    except Exception as exception:
+        log.warning(f"Cannot move to with chain actions. Get:\n {exception.args[0]}")
+        driver.execute_script("arguments[0].scrollIntoView();", element)
+        raise Exception(exception)
+
+
+def __field_validation(field=None):
+    """
+    Check if the field contains the expected keys and values for the type key.
+    :param field: a dictionary
+    :return: True if field is correct false otherwise
+    """
+    return (
+        all(key in field.keys() for key in ("type", "value"))
+        and field['type']
+        in [
+            "id",
+            "name",
+            "class_name",
+            "link_text",
+            "css",
+            "partial_link_text",
+            "xpath",
+            "tag_name",
+        ]
+    )
+
+
+def driver_field_validation(driver, field):
+    if driver is None or not isinstance(driver, web_drivers_tuple()):
+        raise AttributeError("Driver is expected")
+    if not isinstance(field, dict):
+        raise AttributeError(f"{field} is not a dictionary")
+    if not __field_validation(field):
+        raise KeyError("The field argument doesn't contains either the 'type' or 'value' key.")
+
+
+def web_element_validation(web_element):
+    if web_element is not None and not isinstance(web_element, WebElement):
+        raise AttributeError("When provided web_element must be a WebElement"
+                             f"Get {type(web_element)}")

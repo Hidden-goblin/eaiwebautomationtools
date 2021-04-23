@@ -1,9 +1,12 @@
 # -*- coding: utf-8 -*-
 import logging
 from time import sleep
+
+from selenium.webdriver.remote.webelement import WebElement
+
 from .finders import find_element, find_from_elements, find_sub_element_from_element
 from .information import is_field_exist, is_field_displayed
-from .drivers_tools import web_drivers_tuple
+from .drivers_tools import driver_field_validation, web_drivers_tuple, web_element_validation
 from selenium.common.exceptions import InvalidElementStateException, NoSuchElementException, \
     StaleElementReferenceException
 from selenium.webdriver.support.select import Select
@@ -11,21 +14,6 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver import ActionChains
 
 log = logging.getLogger(__name__)
-
-
-def __field_validation(field=None):
-    """
-    Check if the field contains the expected keys and values for the type key.
-    :param field: a dictionary
-    :return: True if field is correct false otherwise
-    """
-    response = False
-    if isinstance(field, dict) \
-            and all([key in field.keys() for key in ("type", "value")]) \
-            and field['type'] in ["id", "name", "class_name", "link_text", "css",
-                                  "partial_link_text", "xpath", "tag_name"]:
-        response = True
-    return response
 
 
 def fill_elements(driver=None, fields=None, data=None):
@@ -41,8 +29,6 @@ def fill_elements(driver=None, fields=None, data=None):
     :return: 0 if success
     """
     try:
-        assert driver is not None and isinstance(driver, web_drivers_tuple()),\
-            "Driver is expected."
         assert all(key in fields.keys() for key in
                    data.keys()), \
             "Missing fields for the given data. Data keys '{}'. Fields keys '{}'".format(
@@ -77,10 +63,7 @@ def fill_element(driver=None, field=None, value=None):
     :return: 0 if success
     """
     try:
-        assert driver is not None and isinstance(driver, web_drivers_tuple()),\
-            "Driver is expected."
-        assert __field_validation(field=field), "Field '{}' is not a valid field".format(field)
-
+        driver_field_validation(driver, field)
         elem = find_element(driver=driver, field=field)
         if value:
             elem.clear()
@@ -116,8 +99,7 @@ def select_in_dropdown(driver=None, field=None, visible_text=None, value=None):
     :raise AssertionError: driver is not define, field is not valid
     :return:
     """
-    assert driver is not None and isinstance(driver, web_drivers_tuple()), "Driver is expected."
-    assert __field_validation(field), "Field '{}' is not a valid field".format(field)
+    driver_field_validation(driver, field)
 
     try:
         my_select = Select(find_element(driver=driver, field=field))
@@ -172,27 +154,20 @@ def select_in_angular_dropdown(driver=None, root_field=None, visible_text: str =
         raise Exception(exception.args[0]) from None
 
 
-def click_element(driver=None, field=None, inner_element_to_click=None):
+def click_element(driver=None, field=None, web_element: WebElement = None):
     """
-    Do simple left click on the given field or on the sub element designed by inner_element_to_click
+    Do simple left click on the given field or on the sub element when web_element is provided
     :param driver: a selenium web driver
     :param field: a dictionary
-    :param inner_element_to_click: a dictionary as field element
+    :param web_element: an element from which to find the element to click
     :raise AssertionError: driver is not define, field is not valid
     :return: 0 if success
     """
-    assert driver is not None and isinstance(driver, web_drivers_tuple()), "Driver is expected."
-    assert __field_validation(field), "Field '{}' is not a valid field".format(field)
-    assert inner_element_to_click is None or __field_validation(inner_element_to_click),\
-        "Field '{}' is not a valid field".format(field)
     try:
-        web_element = find_element(driver=driver, field=field)
-        if inner_element_to_click is None:
-            web_element.click()
-        else:
-            sub_web_element = find_sub_element_from_element(web_element=web_element,
-                                                            field=inner_element_to_click)
-            sub_web_element.click()
+        driver_field_validation(driver, field)
+        web_element_validation(web_element)
+        web_element = find_element(driver=driver, field=field, web_element=web_element)
+        web_element.click()
         return 0
     except Exception as exception:
         logging.error(exception.args)
@@ -208,9 +183,9 @@ def set_checkbox(driver=None, field=None, is_checked=None):
     :raise AssertionError: driver is not define, field is not valid, is_checked is not a boolean
     :return: 0 if success
     """
-    assert driver is not None and isinstance(driver, web_drivers_tuple()), "Driver is expected."
-    assert __field_validation(field), "Field '{}' is not a valid field".format(field)
-    assert isinstance(is_checked, bool), "is_checked is expected to be a boolean."
+    driver_field_validation(driver, field)
+    if not isinstance(is_checked, bool):
+        raise AttributeError("is_checked is expected to be a boolean.")
 
     try:
         elem = find_element(driver=driver, field=field)
@@ -239,8 +214,7 @@ def hover_element(driver=None, field=None):
     :raise AssertionError: driver is not define, field is not valid
     :return: 0 if success
     """
-    assert driver is not None and isinstance(driver, web_drivers_tuple()), "Driver is expected."
-    assert __field_validation(field), "Field '{}' is not a valid field".format(field)
+    driver_field_validation(driver, field)
     try:
         elem = find_element(driver=driver, field=field)
         hover = ActionChains(driver).move_to_element(elem)
@@ -253,17 +227,16 @@ def hover_element(driver=None, field=None):
 
 def select_in_elements(driver=None, field=None, displayed_text=None):
     """
+    TODO Add the capability to select a field from an webelement child
     Do a click on the element which text
     :param driver: a selenium web driver
     :param field: a dictionary
     :param displayed_text: a string
     :return: 0 if success
     """
-
-    assert driver is not None and isinstance(driver, web_drivers_tuple()), "Driver is expected."
-    assert __field_validation(field), "Field '{}' is not a valid field".format(field)
-    assert displayed_text is not None and isinstance(displayed_text, str), \
-        "Displayed text must be a non-empty string"
+    driver_field_validation(driver, field)
+    if displayed_text is None or not isinstance(displayed_text, str):
+        raise AttributeError("Displayed text must be a non-empty string")
     try:
         if is_field_displayed(driver=driver, field=field):
             element = find_from_elements(driver=driver, field=field, text=displayed_text)

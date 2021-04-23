@@ -39,27 +39,27 @@ class TestHTTPServerRequestHandler(BaseHTTPRequestHandler):
         try:
             # Check the file extension required and
             # set the right mime type
-            sendReply = False
+            send_reply = False
             if self.path.endswith(".html"):
                 log.debug("serve html file")
                 mimetype = 'text/html'
-                sendReply = True
+                send_reply = True
             if self.path.endswith(".jpg"):
                 mimetype = 'image/jpg'
-                sendReply = True
+                send_reply = True
             if self.path.endswith(".gif"):
                 mimetype = 'image/gif'
-                sendReply = True
+                send_reply = True
             if self.path.endswith(".js"):
                 mimetype = 'application/javascript'
-                sendReply = True
+                send_reply = True
             if self.path.endswith(".css"):
                 mimetype = 'text/css'
-                sendReply = True
+                send_reply = True
             if self.path == "/close":
                 log.debug("close")
 
-            if sendReply:
+            if send_reply:
                 # Open the static file requested and send it
                 log.debug("current dir is '{}'".format(path.realpath(__file__)))
                 log.debug("Before join '{}'".format(self.folder))

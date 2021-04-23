@@ -3,7 +3,7 @@ import logging
 
 from deprecated.classic import deprecated
 
-from .drivers_tools import web_drivers_tuple
+from .drivers_tools import driver_field_validation, move_to, web_drivers_tuple, web_element_validation
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.common.action_chains import ActionChains
@@ -54,26 +54,18 @@ def find_element(driver=None, field=None, web_element=None):
     :return: a selenium web element
     """
     try:
-        if driver is None or not isinstance(driver, web_drivers_tuple()):
-            raise AttributeError("Driver is expected")
-        if not isinstance(field, dict):
-            raise AttributeError(f"{field} is not a dictionary")
-        if web_element is not None and not isinstance(web_element, WebElement):
-            raise AttributeError("When provided web_element must be a WebElement"
-                                 f"Get {type(web_element)}")
-        if "type" not in field.keys() or "value" not in field.keys():
-            raise KeyError("The field argument doesn't contains either the 'type' or 'value' key.")
+        driver_field_validation(driver, field)
+        web_element_validation(web_element)
+
         if "text" in field.keys():
             return find_from_elements(driver=driver, field=field, text=field['text'])
-        # Define the association between a type and a selenium find action
+
         if web_element is None:
             element = __find_element(driver, field)
         else:
             element = __find_element(web_element, field)
 
-        actions = ActionChains(driver)
-        actions.move_to_element(element)
-        actions.perform()
+        move_to(driver, element)
         return element
     except AttributeError as attribute_error:
         log.error("finders.find_element raised an assertion with following input"
@@ -103,15 +95,8 @@ def find_elements(driver=None, field=None, web_element=None):
     :return: a list of selenium web element
     """
     try:
-        if driver is None or not isinstance(driver, web_drivers_tuple()):
-            raise AttributeError("Driver is expected")
-        if not isinstance(field, dict):
-            raise AttributeError(f"{field} is not a dictionary")
-        if web_element is not None and not isinstance(web_element, WebElement):
-            raise AttributeError("When provided web_element must be a WebElement"
-                                 f"Get {type(web_element)}")
-        if "type" not in field.keys() or "value" not in field.keys():
-            raise KeyError("The field argument doesn't contains either the 'type' or 'value' key.")
+        driver_field_validation(driver, field)
+        web_element_validation(web_element)
         # Define the association between a type and a selenium find action
         if web_element is not None:
             return __find_elements(web_element, field)
@@ -162,9 +147,7 @@ def find_from_elements(driver=None, field=None, text=None, web_element=None):
     if return_element is None:
         raise NoSuchElementException(f"Element designed by field '{field}' and text '{text}'"
                                      " could not be located.")
-    actions = ActionChains(driver)
-    actions.move_to_element(return_element)
-    actions.perform()
+    move_to(driver, return_element)
     return return_element
 
 

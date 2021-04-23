@@ -7,12 +7,18 @@ from deprecated import deprecated
 from shutil import rmtree
 from datetime import datetime
 from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
+# Driver's options
+from selenium.webdriver.chrome.options import Options as ChrOptions
+from selenium.webdriver.firefox.options import Options as FfOptions
+from selenium.webdriver.edge.options import Options as EdgOptions
+from selenium.webdriver.opera.options import Options as OpeOptions
 from selenium.webdriver.remote.webelement import WebElement
+# Driver Manager
 from webdriver_manager.chrome import ChromeDriverManager
 from webdriver_manager.firefox import GeckoDriverManager
 from webdriver_manager.microsoft import EdgeChromiumDriverManager
 from webdriver_manager.opera import OperaDriverManager
+# Self 
 from .navigators import go_to_url, enter_frame, go_to_window
 from .finders import find_element, find_elements, find_from_elements, \
     find_sub_element_from_element
@@ -22,7 +28,7 @@ from .alerts import alert_message, intercept_alert
 from .information import is_alert_present, is_field_exist, is_field_contains_text, \
     element_text, is_field_displayed, is_field_enabled, how_many_windows, where_am_i, \
     is_checkbox_checked, retrieve_tabular
-from .drivers_tools import fullpage_screenshot
+from .drivers_tools import fullpage_screenshot, move_to
 
 log = logging.getLogger(__name__)
 
@@ -37,6 +43,31 @@ class BrowserServer:
     Todo set others webdriver executables
     """
 
+    __OPTIONS_SWITCHER = {
+        "chrome": ChrOptions,
+        "headless-chrome": ChrOptions,
+        "firefox": FfOptions,
+        "opera": OpeOptions,
+        "edge": EdgOptions
+    }
+    
+    __DRIVER_MANAGER = {
+            "chrome": ChromeDriverManager,
+            "headless-chrome": ChromeDriverManager,
+            "firefox": GeckoDriverManager,
+            "edge": EdgeChromiumDriverManager,
+            "opera": OperaDriverManager
+        }
+    
+    __WEB_DRIVERS = {
+            "chrome": webdriver.Chrome,
+            "headless-chrome": webdriver.Chrome,
+            "firefox": webdriver.Firefox,
+            "edge": webdriver.Edge,
+            "safari": webdriver.Safari,
+            "opera": webdriver.Opera
+        }
+    
     def __init__(self):
         # Definition of private attributes and references
         # All strings allowed for the browser name and version
@@ -54,10 +85,31 @@ class BrowserServer:
         log.debug(self.__temp_save_to)
 
         # Definition of private attributes
-        self.__webdriver = None  # The webdriver
+        self.__web_driver = None  # The webdriver
         self.__browser_name = None  # The browser's name used
         self.__driver_path = None  # The path to the webdriver executable
-    
+
+        # Definition of options
+        self.__driver_options = []
+
+    @property
+    def driver_options(self):
+        return self.__driver_options
+
+    @driver_options.setter
+    def driver_options(self, options):
+        if isinstance(options, list):
+            if not options:
+                self.__driver_options = []
+            elif all(isinstance(item, str) for item in options):
+                self.__driver_options.extend(options)
+            else:
+                log.warning(f"Options '{options}' is not of the proper type")
+        elif isinstance(options, str):
+            self.__driver_options.append(options)
+        else:
+            log.warning(f"Options '{options}' is not of the proper type")
+
     @property
     def is_launched(self):
         return self.__launched
@@ -65,7 +117,7 @@ class BrowserServer:
     @property
     def webdriver(self):
         """Read only webdriver"""
-        return self.__webdriver
+        return self.__web_driver
 
     @property
     def browser_name(self):
@@ -95,35 +147,6 @@ class BrowserServer:
             raise ValueError("Expecting a non empty path")
 
     @staticmethod
-    def __driver_switcher():
-        """
-        Switcher method providing the webdriver to process
-        :return: A webdriver method
-        """
-        return {
-            "chrome": webdriver.Chrome,
-            "headless-chrome": webdriver.Chrome,
-            "firefox": webdriver.Firefox,
-            "edge": webdriver.Edge,
-            "safari": webdriver.Safari,
-            "opera": webdriver.Opera
-        }
-
-    @staticmethod
-    def __webdriver_switcher():
-        """
-
-        :return:
-        """
-        return {
-            "chrome": ChromeDriverManager,
-            "headless-chrome": ChromeDriverManager,
-            "firefox": GeckoDriverManager,
-            "edge": EdgeChromiumDriverManager,
-            "opera": OperaDriverManager
-        }
-
-    @staticmethod
     def __serve_time():
         return int(datetime.now().timestamp() * 1000000)
 
@@ -136,37 +159,46 @@ class BrowserServer:
         """
         # todo use the data in order to launch the expected webdriver
         if self.browser_name == "safari":
-            self.__webdriver = self.__driver_switcher()[self.browser_name](
+            self.__web_driver = BrowserServer.__WEB_DRIVERS[self.browser_name](
                 executable_path=self.driver_path)
         elif self.browser_name == "chrome":
             # Hack https://stackoverflow.com/questions/64927909/
             # failed-to-read-descriptor-from-node-connection-a-device-attached-to-the-system
             if self.__driver_path is None:
-                self.__driver_path = self.__webdriver_switcher()[self.browser_name]().install() 
-            option = Options()
+                self.__driver_path = BrowserServer.__DRIVER_MANAGER[self.browser_name]().install() 
+            option = BrowserServer.__OPTIONS_SWITCHER[self.browser_name]()
             option.add_experimental_option('excludeSwitches', ['enable-logging'])
-            self.__webdriver = \
-                self.__driver_switcher()[self.browser_name](
+            if self.driver_options:
+                for opt in self.driver_options:
+                    option.add_argument(opt)
+            self.__web_driver = BrowserServer.__WEB_DRIVERS[self.browser_name](
                     executable_path=self.__driver_path,
                     options=option
                 )
         elif self.browser_name == "headless-chrome":
-            option = Options()
+            option = BrowserServer.__OPTIONS_SWITCHER[self.browser_name]()
             option.add_experimental_option('excludeSwitches', ['enable-logging'])
+            if self.driver_options:
+                for opt in self.driver_options:
+                    option.add_argument(opt)
             option.headless = True
             if self.__driver_path is None:
-                self.__driver_path = self.__webdriver_switcher()[self.browser_name]().install()
-            self.__webdriver = \
-                self.__driver_switcher()[self.browser_name](
+                self.__driver_path = BrowserServer.__DRIVER_MANAGER[self.browser_name]().install()
+            self.__web_driver = BrowserServer.__WEB_DRIVERS[self.browser_name](
                     executable_path=self.__driver_path,
                     options=option
                 )
         elif self.browser_name is not None:
             if self.__driver_path is None:
-                self.__driver_path = self.__webdriver_switcher()[self.browser_name]().install()
-            self.__webdriver = \
-                self.__driver_switcher()[self.browser_name](
-                    executable_path=self.__driver_path)
+                self.__driver_path = BrowserServer.__DRIVER_MANAGER[self.browser_name]().install()
+
+            option = BrowserServer.__OPTIONS_SWITCHER[self.browser_name]()
+            if self.driver_options:
+                for opt in self.driver_options:
+                    option.add_argument(opt)
+            self.__web_driver = BrowserServer.__WEB_DRIVERS[self.browser_name](
+                    executable_path=self.__driver_path,
+                    options=option)
 
         else:
             raise AttributeError("You must set a browser name. "
@@ -180,7 +212,7 @@ class BrowserServer:
         :return:
         """
         self.webdriver.quit()
-        self.__webdriver = None
+        self.__web_driver = None
         self.__launched = False
         return 0
 
@@ -224,7 +256,6 @@ class BrowserServer:
 
     # Start of convenient usage of the automaton tools
     # Navigation
-
     def go_to(self, url=None):
         return go_to_url(driver=self.webdriver, url=url)
 
@@ -264,7 +295,6 @@ class BrowserServer:
         return find_sub_element_from_element(element, field=field)
 
     # Actions
-
     def fill_element(self, field=None, value=None):
         return fill_element(driver=self.webdriver, field=field, value=value)
 
@@ -272,16 +302,20 @@ class BrowserServer:
         return fill_elements(driver=self.webdriver, fields=fields, data=data)
 
     # TODO add unit test
-    def click_element(self, field=None, inner_element_to_click=None):
+    def click_element(self, field=None, web_element=None):
         return click_element(driver=self.webdriver,
                              field=field,
-                             inner_element_to_click=inner_element_to_click)
+                             web_element=web_element)
 
     def select_in_dropdown(self, field=None, visible_text=None, value=None):
         return select_in_dropdown(driver=self.webdriver,
                                   field=field,
                                   visible_text=visible_text,
                                   value=value)
+
+    def move_to(self, web_element: WebElement):
+        return move_to(driver=self.webdriver,
+                       element=web_element)
 
     # TODO add unit test
     def select_in_angular_dropdown(self, root_field=None, visible_text=None):
