@@ -9,11 +9,12 @@ Launch a test web server serving controlled web pages on localhost port 8081
 
 Use the python resources server.
 
-    >>> from eaiautomatontools.resources.server import TestServer
+    >>> from eaiautomatontools.resources.app import Server
 
-    >>> myserver = TestServer()
+    >>> myserver = Server()
 
     >>> myserver.start()
+    ...
 
 Instantiate a web driver using the eaiautomatontools.browserServer
 
@@ -28,13 +29,13 @@ Use a default browser such as Chrome in 32 bit version
 Serve the web driver
 
     >>> myWebDriver.serve()
-    <BLANKLINE>
-    <BLANKLINE>
     0
+  
+  
 
 Request the web server IP 127.0.0.1:8081
 
-    >>> myWebDriver.go_to("http://127.0.0.1:8081")
+    >>> myWebDriver.go_to("http://localhost:8081")
     ...
     0
 

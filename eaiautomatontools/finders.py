@@ -54,8 +54,8 @@ def find_element(driver=None, field=None, web_element=None):
     :return: a selenium web element
     """
     try:
-        driver_field_validation(driver, field)
-        web_element_validation(web_element)
+        driver_field_validation(driver, field, log)
+        web_element_validation(web_element, log)
 
         if "text" in field.keys():
             return find_from_elements(driver=driver, field=field, text=field['text'])
@@ -67,19 +67,11 @@ def find_element(driver=None, field=None, web_element=None):
 
         move_to(driver, element)
         return element
-    except AttributeError as attribute_error:
-        log.error("finders.find_element raised an assertion with following input"
-                  f" driver:'{driver}' and field:'{field}' and web_element: '{web_element}'."
-                  f" Assertion is '{attribute_error.args}'")
-        raise AttributeError(attribute_error)
-    except KeyError as key_error:
-        log.error(key_error.args[0])
-        raise KeyError(key_error)
     except NoSuchElementException as no_such_element:
         log.error("In find_element didn't find the element '{}'."
                   " Exception is '{}'".format(field, no_such_element.args))
-        raise NoSuchElementException("Element designed by field '{}'"
-                                     " could not be located.".format(field)) from None
+        raise NoSuchElementException(f"Element designed by field '{field}'"
+                                     " could not be located.") from None
 
 
 def find_elements(driver=None, field=None, web_element=None):
@@ -94,22 +86,14 @@ def find_elements(driver=None, field=None, web_element=None):
     :raise KeyError: If the field variable doesn't contain the expected keys i.e. type and value
     :return: a list of selenium web element
     """
-    try:
-        driver_field_validation(driver, field)
-        web_element_validation(web_element)
-        # Define the association between a type and a selenium find action
-        if web_element is not None:
-            return __find_elements(web_element, field)
-        else:
-            return __find_elements(driver, field)
-    except AttributeError as attribute_error:
-        log.error("finders.find_elements raised an assertion with following input"
-                  f" driver:'{driver}' and field:'{field}' and web_element: '{web_element}'."
-                  f" Assertion is '{attribute_error.args}'")
-        raise AttributeError(attribute_error)
-    except KeyError as key_error:
-        log.error(key_error.args[0])
-        raise KeyError(key_error)
+
+    driver_field_validation(driver, field, log)
+    web_element_validation(web_element, log)
+    # Define the association between a type and a selenium find action
+    if web_element is not None:
+        return __find_elements(web_element, field)
+    else:
+        return __find_elements(driver, field)
 
 
 def find_from_elements(driver=None, field=None, text=None, web_element=None):

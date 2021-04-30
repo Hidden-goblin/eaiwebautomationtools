@@ -19,7 +19,8 @@ Without settings the server is not usable
     >>> myBrowser.serve()
     Traceback (most recent call last):
     ...
-    AttributeError: You must set a browser name. Use one of '['chrome', 'firefox', 'opera', 'edge', 'safari']'
+    AttributeError: You must set a browser name. Use one of '('chrome', 'firefox', 'opera', 'edge', 'safari', 'headless-chrome')'
+
 
 ## Setting the browser name
 It's quite easy. Use the browser's name you want to control with the limitation of being in the list 'chrome', 'firefox',
@@ -32,7 +33,7 @@ If you don't you get an error.
     >>> myBrowser.browser_name = 'toto'
     Traceback (most recent call last):
     ...
-    ValueError: Unknown browser name. Get toto instead of ['chrome', 'firefox', 'opera', 'edge', 'safari']
+    ValueError: Unknown browser name. Get toto instead of ('chrome', 'firefox', 'opera', 'edge', 'safari', 'headless-chrome')
 
 Name are not case sensitive
 
@@ -46,8 +47,6 @@ At this moment you can serve a selenium web driver
 ## Serve a web driver
 
     >>> myBrowser.serve()
-    <BLANKLINE>
-    <BLANKLINE>
     0
 
 ## Get the web driver
@@ -70,8 +69,6 @@ When closing you discard the web driver. However you can re-serve a new driver a
     <class 'NoneType'>
 
     >>> myBrowser.serve()
-    <BLANKLINE>
-    <BLANKLINE>
     0
 
     >>> mydriver = myBrowser.webdriver

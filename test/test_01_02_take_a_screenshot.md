@@ -10,11 +10,12 @@ Screenshot could be full page or partial.
 
 Use the python resources server.
 
-    >>> from eaiautomatontools.resources.server import TestServer
+    >>> from eaiautomatontools.resources.app import Server
 
-    >>> myserver = TestServer()
+    >>> myserver = Server()
 
     >>> myserver.start()
+    ...
 
 Instantiate a web driver using the eaiautomatontools.browserServer
 
@@ -25,11 +26,12 @@ Instantiate a web driver using the eaiautomatontools.browserServer
     >>> myBrowser.browser_name = "Chrome"
     
     >>> myBrowser.serve()
-    <BLANKLINE>
-    <BLANKLINE>
     0
 
-    >>> myBrowser.go_to(url="http://127.0.0.1:8081/screenshot.html")
+    >>> myBrowser.go_to(url="http://localhost:8081")
+    0
+
+    >>> myBrowser.go_to(url="http://localhost:8081/screenshot.html")
     0
 
 ## Screenshots

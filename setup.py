@@ -33,7 +33,8 @@ setup(
         'selenium>=3.14',
         'Pillow>=8.1.1',
         'webdriver-manager',
-        'Deprecated'
+        'Deprecated',
+        'polling2'
     ],
     python_requires='>=3.7, !=2.*',
     packages=find_packages(),

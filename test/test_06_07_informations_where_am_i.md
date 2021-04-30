@@ -11,11 +11,12 @@ Launch a test web server serving controlled web pages on localhost port 8081
 
 Use the python resources server.
 
-    >>> from eaiautomatontools.resources.server import TestServer
+    >>> from eaiautomatontools.resources.app import Server
 
-    >>> myserver = TestServer()
+    >>> myserver = Server()
 
     >>> myserver.start()
+    ...
 
 Instantiate a web driver using the eaiautomatontools.browserServer
 
@@ -30,9 +31,10 @@ Use a default browser such as Chrome in 32 bit version
 Serve the web driver
 
     >>> myWebDriver.serve()
-    <BLANKLINE>
-    <BLANKLINE>
     0
+  
+    >>> myserver.start()
+    ...
 
 
 
@@ -44,10 +46,10 @@ Import the information tool
 
 We will access a page then retrieve the url
 
-    >>> myWebDriver.go_to("http://127.0.0.1:8081/forms.html")
+    >>> myWebDriver.go_to("http://localhost:8081/forms.html")
     0
     >>> where_am_i(myWebDriver.webdriver)
-    'http://127.0.0.1:8081/forms.html'
+    'http://localhost:8081/forms.html'
 
 ## Error cases
 It raise a TypeError if the webdriver is not provided as per default the driver is None

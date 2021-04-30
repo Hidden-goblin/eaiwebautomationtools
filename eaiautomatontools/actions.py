@@ -4,9 +4,9 @@ from time import sleep
 
 from selenium.webdriver.remote.webelement import WebElement
 
-from .finders import find_element, find_from_elements, find_sub_element_from_element
+from .finders import find_element, find_from_elements
 from .information import is_field_exist, is_field_displayed
-from .drivers_tools import driver_field_validation, web_drivers_tuple, web_element_validation
+from .drivers_tools import driver_field_validation, web_element_validation
 from selenium.common.exceptions import InvalidElementStateException, NoSuchElementException, \
     StaleElementReferenceException
 from selenium.webdriver.support.select import Select
@@ -16,13 +16,14 @@ from selenium.webdriver import ActionChains
 log = logging.getLogger(__name__)
 
 
-def fill_elements(driver=None, fields=None, data=None):
+def fill_elements(driver=None, fields=None, web_element=None, data=None):
     """
     Fill a field set with data where the field and data are identified by the same key
     Keys are taken from the data set dictionary
     :param driver: a selenium web driver
-    :param fields: a dictionary
-    :param data: a dictionary
+    :param fields: a dictionary of fields
+    :param web_element: a web_element to search elements from
+    :param data: a dictionary of data
     :raise AssertionError: driver is not define, fields and data doesn't have the same keys
     :raise InvalidElementStateException: rethrown from fill_element
     :raise Exception: all other issues
@@ -36,7 +37,7 @@ def fill_elements(driver=None, fields=None, data=None):
                 fields.keys())  # Check that the fields dictionary contains enough keys
 
         for key in data:
-            fill_element(driver=driver, field=fields[key], value=data[key])
+            fill_element(driver=driver, field=fields[key], web_element=web_element, value=data[key])
 
         return 0
     except AssertionError as assertion:
@@ -51,9 +52,10 @@ def fill_elements(driver=None, fields=None, data=None):
         raise Exception(exception.args[0]) from None
 
 
-def fill_element(driver=None, field=None, value=None):
+def fill_element(driver=None, field=None, web_element=None, value=None):
     """
     Fill the given field with the value.
+    :param web_element:
     :param driver: a selenium web driver
     :param field: a dictionary
     :param value: a string or castable to string
@@ -64,14 +66,21 @@ def fill_element(driver=None, field=None, value=None):
     """
     try:
         driver_field_validation(driver, field)
-        elem = find_element(driver=driver, field=field)
-        if value:
-            elem.clear()
-            elem.send_keys(str(value))
-        else:
-            number_of_backspace_hit = len(elem.get_attribute('value'))
-            elem.send_keys(number_of_backspace_hit * Keys.BACKSPACE)
-        return 0
+        iteration = 0
+        while iteration < 5:
+            try:
+                elem = find_element(driver=driver, field=field, web_element=web_element)
+                if value:
+                    elem.clear()
+                    elem.send_keys(str(value))
+                else:
+                    number_of_backspace_hit = len(elem.get_attribute('value'))
+                    elem.send_keys(number_of_backspace_hit * Keys.BACKSPACE)
+                return 0
+            except StaleElementReferenceException:
+                log.info("StaleElementReferenceException retry after 100ms sleep")
+                iteration += 1
+                sleep(0.1)
     except AssertionError as assertion:
         log.error("actions.fill_element raised an assertion with following"
                   " input driver:'{}', field:'{}' and value:'{}'."
@@ -102,17 +111,23 @@ def select_in_dropdown(driver=None, field=None, visible_text=None, value=None):
     driver_field_validation(driver, field)
 
     try:
-        my_select = Select(find_element(driver=driver, field=field))
+        iteration = 0
+        while iteration < 5:
+            try:
+                my_select = Select(find_element(driver=driver, field=field))
 
-        if visible_text is not None:
-            my_select.select_by_visible_text(visible_text)
-        elif value is not None:
-            my_select.select_by_value(value)
-        else:
-            raise Exception("select_in_dropdown can't select with no value.")
+                if visible_text is not None:
+                    my_select.select_by_visible_text(visible_text)
+                elif value is not None:
+                    my_select.select_by_value(value)
+                else:
+                    raise Exception("select_in_dropdown can't select with no value.")
 
-        return 0
-
+                return 0
+            except StaleElementReferenceException:
+                log.info("StaleElementReferenceException retry after 100ms sleep")
+                iteration += 1
+                sleep(0.1)
     except NoSuchElementException as no_such_element:
         log.error(no_such_element.args)
         raise NoSuchElementException(no_such_element.args[0]) from None
@@ -166,9 +181,16 @@ def click_element(driver=None, field=None, web_element: WebElement = None):
     try:
         driver_field_validation(driver, field)
         web_element_validation(web_element)
-        web_element = find_element(driver=driver, field=field, web_element=web_element)
-        web_element.click()
-        return 0
+        iteration = 0
+        while iteration < 5:
+            try:
+                web_element = find_element(driver=driver, field=field, web_element=web_element)
+                web_element.click()
+                return 0
+            except StaleElementReferenceException:
+                log.info("StaleElementReferenceException retry after 100ms sleep")
+                iteration += 1
+                sleep(0.1)
     except Exception as exception:
         logging.error(exception.args)
         raise Exception(exception.args[0]) from None

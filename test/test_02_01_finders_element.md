@@ -9,11 +9,12 @@ Launch a test web server serving controlled web pages on localhost port 8081
 
 Use the python resources server.
 
-    >>> from eaiautomatontools.resources.server import TestServer
+    >>> from eaiautomatontools.resources.app import Server
 
-    >>> myserver = TestServer()
+    >>> myserver = Server()
 
     >>> myserver.start()
+    ...
 
 Instantiate a web driver using the eaiautomatontools.browserServer
 
@@ -28,13 +29,13 @@ Use a default browser such as Chrome in 32 bit version
 Serve the web driver
 
     >>> myWebDriver.serve()
-    <BLANKLINE>
-    <BLANKLINE>
     0
+  
+  
 
 Request the web server IP 127.0.0.1:8081
 
-    >>> myWebDriver.go_to("http://127.0.0.1:8081")
+    >>> myWebDriver.go_to("http://localhost:8081")
     ...
     0
 
@@ -129,7 +130,7 @@ Another example
     'The tables test page'
 
 ### Find an element giving a text value
-    >>> myWebDriver.go_to("http://127.0.0.1:8081/forms.html")
+    >>> myWebDriver.go_to("http://localhost:8081/forms.html")
     ...
     0
 
@@ -140,7 +141,7 @@ Another example
 
 ## Not found element
 
-    >>> myWebDriver.go_to("http://127.0.0.1:8081")
+    >>> myWebDriver.go_to("http://localhost:8081")
     ...
     0
 
@@ -191,32 +192,35 @@ Another example
     >>> myElement = find_element(field={"type":"xpath","value":"html/body/div[2]"})
     Traceback (most recent call last):
     ...
-    AssertionError: Driver is expected.
+    AttributeError: Driver is expected
 
 ## The field value is mandatory
     
     >>> myElement = find_element(driver=myWebDriver.webdriver)
     Traceback (most recent call last):
     ...
-    AssertionError: Field must be a dictionary
+    AttributeError: None is not a dictionary
 
 ## The field value must contains a type and a value key
     
     >>> myElement = find_element(driver=myWebDriver.webdriver, field={"type":"xpath"})
     Traceback (most recent call last):
     ...
-    KeyError: KeyError("The field argument doesn't contains either the 'type' or 'value' key.")
+    KeyError: "The field argument doesn't contains either the 'type' or 'value' key."
 
     >>> myElement = find_element(driver=myWebDriver.webdriver, field={"value":"html/body/span"})
     Traceback (most recent call last):
     ...
-    KeyError: KeyError("The field argument doesn't contains either the 'type' or 'value' key.")
+    KeyError: "The field argument doesn't contains either the 'type' or 'value' key."
+
 
 TearDown
 -------------------------
 Close all windows
+
     >>> myWebDriver.close()
     0
 
 Stop the web server
+
     >>> myserver.stop()

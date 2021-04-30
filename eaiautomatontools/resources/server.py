@@ -3,6 +3,7 @@ from os import sep, path
 from pathlib import Path
 import threading
 from logging import getLogger
+from time import sleep
 
 log = getLogger(__name__)
 
@@ -82,7 +83,7 @@ class TestHTTPServerRequestHandler(BaseHTTPRequestHandler):
 
 class TestServer:
     def __init__(self):
-        self.__server_address = ('127.0.0.1', 8081)
+        self.__server_address = ('0.0.0.0', 8081)
         self.__httpd = HTTPServer(self.__server_address, TestHTTPServerRequestHandler)
         self.__thread = None
 
@@ -91,8 +92,9 @@ class TestServer:
         self.__thread.daemon = True
         self.__thread.start()
         log.debug("Starting server")
+        sleep(5)
 
     def stop(self):
         self.__httpd.shutdown()
         self.__thread = None
-        log.debug("Stoping server")
+        log.debug("Stopping server")

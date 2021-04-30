@@ -216,15 +216,15 @@ class BrowserServer:
         self.__launched = False
         return 0
 
-    def full_screenshot(self, filename: str):
+    def __full_screenshot(self, filename: str):
         return fullpage_screenshot(self.webdriver, filename)
 
     def take_a_screenshot(self, save_to: str = None, is_full_screen: bool = True):
         """
         Take a screenshot and save the file to the given folder
-        Each screenshot is followed by a timestamp.
-        :param is_full_screen:
-        :param save_to:
+        Each screenshot is followed by a timestamp. The file pattern is screenshot-<timestamp>.png
+        :param save_to: path location to save the screenshot to
+        :param is_full_screen: defaulted to 'True' capture the full page or the current screenview
         :return: 0 if success
         """
         try:
@@ -236,7 +236,7 @@ class BrowserServer:
                 log.debug("Try to save to '{}'".format(save_to))
                 filename = os.path.join(save_to, "screenshot-{}.png".format(self.__serve_time()))
             if is_full_screen:
-                result = self.full_screenshot(filename)
+                result = self.__full_screenshot(filename)
             else:
                 result = self.webdriver.get_screenshot_as_file(filename)
             if not result:
@@ -257,12 +257,15 @@ class BrowserServer:
     # Start of convenient usage of the automaton tools
     # Navigation
     def go_to(self, url=None):
+        """Navigate to the given url"""
         return go_to_url(driver=self.webdriver, url=url)
 
-    def enter_frame(self, field=None):
-        return enter_frame(driver=self.webdriver, field=field)
+    def enter_frame(self, field=None, web_element: WebElement = None):
+        """Enter the frame found using the find_element method"""
+        return enter_frame(driver=self.webdriver, field=field, web_element=web_element)
 
     def go_to_window(self, handle=None, title=None):
+        """Switch to a window providing either the window handle or window title"""
         return go_to_window(driver=self.webdriver, handle=handle, title=title)
 
     # Finders
@@ -295,25 +298,37 @@ class BrowserServer:
         return find_sub_element_from_element(element, field=field)
 
     # Actions
-    def fill_element(self, field=None, value=None):
-        return fill_element(driver=self.webdriver, field=field, value=value)
+    def fill_element(self, field=None, web_element=None, value=None):
+        """Fill the element with the value. Use the find_element method to find it"""
+        return fill_element(driver=self.webdriver,
+                            field=field,
+                            web_element=web_element,
+                            value=value)
 
-    def fill_elements(self, fields=None, data=None):
-        return fill_elements(driver=self.webdriver, fields=fields, data=data)
+    def fill_elements(self, fields=None, web_element=None, data=None):
+        """Fill data in the respective field. data and fields keys must match.
+        data keys must be in field keys"""
+        return fill_elements(driver=self.webdriver,
+                             fields=fields,
+                             web_element=web_element,
+                             data=data)
 
     # TODO add unit test
     def click_element(self, field=None, web_element=None):
+        """Perform a click element on the element. Use the find_element method to find it"""
         return click_element(driver=self.webdriver,
                              field=field,
                              web_element=web_element)
 
     def select_in_dropdown(self, field=None, visible_text=None, value=None):
+
         return select_in_dropdown(driver=self.webdriver,
                                   field=field,
                                   visible_text=visible_text,
                                   value=value)
 
     def move_to(self, web_element: WebElement):
+        """Bring the element into the screenplay"""
         return move_to(driver=self.webdriver,
                        element=web_element)
 

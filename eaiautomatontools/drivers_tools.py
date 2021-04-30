@@ -84,7 +84,7 @@ def move_to(driver=None, element: WebElement = None):
         log.error("Element is expected")
         raise AttributeError("Element is expected")
     try:
-        if 'firefox' in driver.capabilities['browserName'] :
+        if 'firefox' in driver.capabilities['browserName']:
             x = element.location['x']
             y = element.location['y']
             scroll_by_coord = 'window.scrollTo(%s,%s);' % (
@@ -110,31 +110,36 @@ def __field_validation(field=None):
     :return: True if field is correct false otherwise
     """
     return (
-        all(key in field.keys() for key in ("type", "value"))
-        and field['type']
-        in [
-            "id",
-            "name",
-            "class_name",
-            "link_text",
-            "css",
-            "partial_link_text",
-            "xpath",
-            "tag_name",
-        ]
+            all(key in field.keys() for key in ("type", "value"))
+            and field['type']
+            in [
+                "id",
+                "name",
+                "class_name",
+                "link_text",
+                "css",
+                "partial_link_text",
+                "xpath",
+                "tag_name",
+            ]
     )
 
 
-def driver_field_validation(driver, field):
+def driver_field_validation(driver, field, logger):
     if driver is None or not isinstance(driver, web_drivers_tuple()):
+        logger.error("Driver is expected")
         raise AttributeError("Driver is expected")
     if not isinstance(field, dict):
+        logger.error(f"{field} is not a dictionary")
         raise AttributeError(f"{field} is not a dictionary")
     if not __field_validation(field):
+        logger.error("The field argument doesn't contains either the 'type' or 'value' key.")
         raise KeyError("The field argument doesn't contains either the 'type' or 'value' key.")
 
 
-def web_element_validation(web_element):
+def web_element_validation(web_element, logger):
     if web_element is not None and not isinstance(web_element, WebElement):
+        logger.error("When provided web_element must be a WebElement"
+                     f"Get {type(web_element)}")
         raise AttributeError("When provided web_element must be a WebElement"
                              f"Get {type(web_element)}")
