@@ -10,11 +10,12 @@ Launch a test web server serving controlled web pages on localhost port 8081
 
 Use the python resources server.
 
-    >>> from eaiautomatontools.resources.server import TestServer
+    >>> from eaiautomatontools.resources.app import Server
 
-    >>> myserver = TestServer()
+    >>> myserver = Server()
 
     >>> myserver.start()
+    ...
 
 Instantiate a web driver using the eaiautomatontools.browserServer
 
@@ -29,13 +30,13 @@ Use a default browser such as Chrome in 32 bit version
 Serve the web driver
 
     >>> myWebDriver.serve()
-    <BLANKLINE>
-    <BLANKLINE>
     0
+  
+  
 
 Request the test page resources/popups.html
 
-    >>> myWebDriver.go_to("http://127.0.0.1:8081/popups.html")
+    >>> myWebDriver.go_to("http://localhost:8081/popups.html")
     0
 
 Use the finders tools in order to retrieve link elements within the page
@@ -74,11 +75,11 @@ Now clean the browser and reopen the first page only
     0
 
     >>> myWebDriver.serve()
-    <BLANKLINE>
-    <BLANKLINE>
     0
+  
+  
 
-    >>> myWebDriver.go_to("http://127.0.0.1:8081/popups.html")
+    >>> myWebDriver.go_to("http://localhost:8081/popups.html")
     0
 
 # Switch to window with the page title when each pages have different title
@@ -121,11 +122,11 @@ Now clean the browser and reopen the first page only
     0
 
     >>> myWebDriver.serve()
-    <BLANKLINE>
-    <BLANKLINE>
     0
+  
+  
 
-    >>> myWebDriver.go_to("http://127.0.0.1:8081/popups.html")
+    >>> myWebDriver.go_to("http://localhost:8081/popups.html")
     0
 
 # Switch to window using the window handles

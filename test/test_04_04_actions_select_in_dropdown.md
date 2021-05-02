@@ -9,11 +9,12 @@ Launch a test web server serving controlled web pages on localhost port 8081
 
 Use the python resources server.
 
-    >>> from eaiautomatontools.resources.server import TestServer
+    >>> from eaiautomatontools.resources.app import Server
 
-    >>> myserver = TestServer()
+    >>> myserver = Server()
 
     >>> myserver.start()
+    ...
 
 Instantiate a web driver using the eaiautomatontools.browserServer
 
@@ -28,13 +29,13 @@ Use a default browser such as Chrome in 32 bit version
 Serve the web driver
 
     >>> myWebDriver.serve()
-    <BLANKLINE>
-    <BLANKLINE>
     0
+  
+  
 
 Open the form test page
 
-    >>> myWebDriver.go_to("http://127.0.0.1:8081/select.html")
+    >>> myWebDriver.go_to("http://localhost:8081/select.html")
     0
 
 Import the find_element tool
@@ -71,7 +72,7 @@ Import the set_checkbox tool
     >>> select_in_dropdown(field={'type':'id','value':'county'},value="Meath")
     Traceback (most recent call last):
     ...
-    AssertionError: Driver is expected.
+    TypeError: Driver is expected
 
 ### The field is not valid
 
@@ -80,14 +81,14 @@ Import the set_checkbox tool
     >>> select_in_dropdown(driver=myWebDriver.webdriver, field={'type':'id','val':'county'},value="Meath")
     Traceback (most recent call last):
     ...
-    AssertionError: Field '{'type': 'id', 'val': 'county'}' is not a valid field
+    KeyError: "The field argument doesn't contains either the 'type' or 'value' key."
 
 #### Incorrect type key value not in
 
     >>> select_in_dropdown(driver=myWebDriver.webdriver, field={'type':'if','value':'county'},visible_text="County Kilkenny")
     Traceback (most recent call last):
     ...
-    AssertionError: Field '{'type': 'if', 'value': 'county'}' is not a valid field
+    ValueError: The field type is not one the expected: '('id', 'name', 'class_name', 'link_text', 'css', 'partial_link_text', 'xpath', 'tag_name')
 
 ## Exception errors
 

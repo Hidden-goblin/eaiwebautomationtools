@@ -6,11 +6,17 @@ verify_ssl = true
 [dev-packages]
 coverage = "*"
 pytest = "*"
+flask = "*"
+requests = "*"
+mkdocs = "*"
 
 [packages]
 selenium = "*"
 Pillow = "*"
 webdriver-manager = "*"
+Deprecated = "*"
+radon = "*"
+polling2 = "*"
 
 [requires]
 python_version = "3.8"

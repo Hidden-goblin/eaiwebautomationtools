@@ -32,9 +32,12 @@ def intercept_alert(driver=None, messages=None, accept=True, value=None):
 
         alert_object = driver.switch_to.alert
 
-        if messages is not None and isinstance(messages, list):
-            if alert_object.text not in messages:
-                raise Exception("Message not found")
+        if (
+            messages is not None
+            and isinstance(messages, list)
+            and alert_object.text not in messages
+        ):
+            raise Exception("Message not found")
 
         if value is not None:
             alert_object.send_keys(value)

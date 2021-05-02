@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 import logging
-from .drivers_tools import web_drivers_tuple
+
+from deprecated.classic import deprecated
+
+from .drivers_tools import driver_field_validation, move_to, web_drivers_tuple, web_element_validation
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.common.action_chains import ActionChains
@@ -8,13 +11,42 @@ from selenium.webdriver.common.action_chains import ActionChains
 log = logging.getLogger(__name__)
 
 
-def find_element(driver=None, field=None):
+def __find_element(web_element, field: dict):
+    switcher = {
+        "id": web_element.find_element_by_id,
+        "name": web_element.find_element_by_name,
+        "class_name": web_element.find_element_by_class_name,
+        "css": web_element.find_element_by_css_selector,
+        "link_text": web_element.find_element_by_link_text,
+        "partial_link_text": web_element.find_element_by_partial_link_text,
+        "tag_name": web_element.find_element_by_tag_name,
+        "xpath": web_element.find_element_by_xpath
+    }
+    return switcher[field["type"]](field["value"])
+
+
+def __find_elements(web_element, field: dict):
+    switcher = {
+        "id": web_element.find_elements_by_id,
+        "name": web_element.find_elements_by_name,
+        "class_name": web_element.find_elements_by_class_name,
+        "css": web_element.find_elements_by_css_selector,
+        "link_text": web_element.find_elements_by_link_text,
+        "partial_link_text": web_element.find_elements_by_partial_link_text,
+        "tag_name": web_element.find_elements_by_tag_name,
+        "xpath": web_element.find_elements_by_xpath
+    }
+    return switcher[field["type"]](field["value"])
+
+
+def find_element(driver=None, field=None, web_element=None):
     """
     Look up for the field described as a dictionary {"type": string, "value":}.
     Example: {"type": "id", "value": "frmCentreNumber"}
     Optionally, you can specify a text an call the find_from_elements method
     :param driver: a selenium web driver
     :param field: a dictionary
+    :param web_element: a web_element to search from
     :raise AssertionError: if driver is not a proper web driver instance or
             the field is not a dictionary
     :raise KeyError: If the field variable doesn't contain the expected keys i.e. type and value
@@ -22,47 +54,31 @@ def find_element(driver=None, field=None):
     :return: a selenium web element
     """
     try:
-        assert driver is not None and isinstance(driver, web_drivers_tuple()),\
-            "Driver is expected."
-        assert isinstance(field, dict), "Field must be a dictionary"
-        if "type" not in field.keys() or "value" not in field.keys():
-            raise KeyError("The field argument doesn't contains either the 'type' or 'value' key.")
+        driver_field_validation(driver, field, log)
+        web_element_validation(web_element, log)
+
         if "text" in field.keys():
             return find_from_elements(driver=driver, field=field, text=field['text'])
-        # Define the association between a type and a selenium find action
-        switcher = {
-            "id": driver.find_element_by_id,
-            "name": driver.find_element_by_name,
-            "class_name": driver.find_element_by_class_name,
-            "css": driver.find_element_by_css_selector,
-            "link_text": driver.find_element_by_link_text,
-            "partial_link_text": driver.find_element_by_partial_link_text,
-            "tag_name": driver.find_element_by_tag_name,
-            "xpath": driver.find_element_by_xpath
-        }
-        element = switcher[field["type"]](field["value"])
-        actions = ActionChains(driver)
-        actions.move_to_element(element)
-        actions.perform()
+
+        if web_element is None:
+            element = __find_element(driver, field)
+        else:
+            element = __find_element(web_element, field)
+
+        move_to(driver, element)
         return element
-    except AssertionError as assertion:
-        log.error("finders.find_element raised an assertion with following input"
-                  f" driver:'{driver}' and field:'{field}'. Assertion is '{assertion.args}'")
-        raise
-    except KeyError as key_error:
-        log.error(key_error.args[0])
-        raise KeyError(key_error)
     except NoSuchElementException as no_such_element:
         log.error("In find_element didn't find the element '{}'."
                   " Exception is '{}'".format(field, no_such_element.args))
-        raise NoSuchElementException("Element designed by field '{}'"
-                                     " could not be located.".format(field)) from None
+        raise NoSuchElementException(f"Element designed by field '{field}'"
+                                     " could not be located.") from None
 
 
-def find_elements(driver=None, field=None):
+def find_elements(driver=None, field=None, web_element=None):
     """
     Look up for the field described as a dictionary {"type": string, "value":}.
     Example: {"type": "id", "value": "frmCentreNumber"}
+    :param web_element:
     :param driver: a selenium web driver
     :param field: a dictionary
     :raise AssertionError: if driver is not a proper web driver instance or
@@ -70,37 +86,20 @@ def find_elements(driver=None, field=None):
     :raise KeyError: If the field variable doesn't contain the expected keys i.e. type and value
     :return: a list of selenium web element
     """
-    try:
-        assert driver is not None and isinstance(driver, web_drivers_tuple()),\
-            "Driver is expected."
-        assert isinstance(field, dict), "Field must be a dictionary"
-        if "type" not in field.keys() or "value" not in field.keys():
-            raise KeyError("The field argument doesn't contains either the 'type' or 'value' key.")
-        # Define the association between a type and a selenium find action
-        switcher = {
-            "id": driver.find_elements_by_id,
-            "name": driver.find_elements_by_name,
-            "class_name": driver.find_elements_by_class_name,
-            "css": driver.find_elements_by_css_selector,
-            "link_text": driver.find_elements_by_link_text,
-            "partial_link_text": driver.find_elements_by_partial_link_text,
-            "tag_name": driver.find_elements_by_tag_name,
-            "xpath": driver.find_elements_by_xpath
-        }
-        return switcher[field["type"]](field["value"])
-    except AssertionError as assertion:
-        log.error("finders.find_elements raised an assertion with following input"
-                  " driver:'{}', field:'{}'. Assertion is '{}'".format(driver, field,
-                                                                       assertion.args))
-        raise
-    except KeyError as key_error:
-        log.error(key_error.args[0])
-        raise KeyError(key_error)
+
+    driver_field_validation(driver, field, log)
+    web_element_validation(web_element, log)
+    # Define the association between a type and a selenium find action
+    if web_element is not None:
+        return __find_elements(web_element, field)
+    else:
+        return __find_elements(driver, field)
 
 
-def find_from_elements(driver=None, field=None, text=None):
+def find_from_elements(driver=None, field=None, text=None, web_element=None):
     """
     Try to locate an element using his text
+    :param web_element:
     :param driver: a selenium web driver
     :param field: a dictionary
     :param text: a string
@@ -109,7 +108,7 @@ def find_from_elements(driver=None, field=None, text=None):
     :raise NoSuchElementException: when no element is found
     :return: a selenium web element
     """
-    elements = find_elements(driver=driver, field=field)
+    elements = find_elements(driver=driver, field=field, web_element=web_element)
     return_element = None
 
     if text is None:
@@ -117,7 +116,7 @@ def find_from_elements(driver=None, field=None, text=None):
     if not isinstance(text, str):
         raise AttributeError("text must be a string")
     if not text:
-        raise AttributeError("text must be non-empty")
+        raise ValueError("text must be non-empty")
 
     for element in elements:
         if element.text == text:
@@ -132,13 +131,11 @@ def find_from_elements(driver=None, field=None, text=None):
     if return_element is None:
         raise NoSuchElementException(f"Element designed by field '{field}' and text '{text}'"
                                      " could not be located.")
-    else:
-        actions = ActionChains(driver)
-        actions.move_to_element(return_element)
-        actions.perform()
-        return return_element
+    move_to(driver, return_element)
+    return return_element
 
 
+@deprecated(version="1.0.5", reason="You should use find_element with a web_element")
 def find_sub_element_from_element(web_element=None, field=None):
     """
     Return a sub element from the element

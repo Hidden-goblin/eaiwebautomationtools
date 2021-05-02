@@ -1,11 +1,14 @@
 # -*- coding: utf-8 -*-
-import logging
+from logging import getLogger
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException
-from .drivers_tools import web_drivers_tuple
+from .drivers_tools import driver_field_validation, web_drivers_tuple
 from .finders import find_element
+
+
+log = getLogger(__name__)
 
 
 def is_field_exist(driver=None, field=None, until=5):
@@ -14,12 +17,12 @@ def is_field_exist(driver=None, field=None, until=5):
     :param driver: a selenium web driver
     :param field: a dictionary
     :param until: an int as the wait time
-    :raise AssertionError: driver isn't of the expected type
+    :raise TypeError: driver isn't of the expected type
     :return: a web element if exist, None otherwise
     """
     try:
-        assert driver is not None and isinstance(driver, web_drivers_tuple()),\
-            "Driver is expected."
+        driver_field_validation(driver, field, log)
+
         switcher = {
             "id": By.ID,
             "name": By.NAME,
@@ -33,14 +36,10 @@ def is_field_exist(driver=None, field=None, until=5):
 
         return WebDriverWait(driver, until).until(
             EC.presence_of_element_located((switcher[field["type"]], field["value"])))
-    except AssertionError as assertion:
-        logging.error("information.is_field_exist raised an assertion with following"
-                      " input driver:'{}', field:'{}' and until:'{}'. "
-                      "Assertion is '{}'".format(driver, field, until, assertion.args))
-        raise
+
     except TimeoutException:
-        logging.warning("""information.is_field_exist raised a TimeoutException for
-         the following field '{}' """.format(field))
+        log.warning(f"information.is_field_exist raised a TimeoutException for "
+                    f"the following field '{field}'")
         return None
 
 
@@ -54,21 +53,11 @@ def is_field_contains_text(driver=None, field=None, text=None):
     :raise AssertionError: driver isn't of the expected type
     :return: True if the field contains the text, False otherwise
     """
-    try:
-        assert driver is not None and isinstance(driver, web_drivers_tuple()),\
-            "Driver is expected."
-        element = is_field_exist(driver=driver, field=field)
-        if (element.text is not None and text in element.text) or (
-                element.get_attribute("value") is not None
-                and text in element.get_attribute("value")):
-            return True
-        else:
-            return False
-    except AssertionError as assertion:
-        logging.error("information.is_field_exist raised an assertion with "
-                      "following input driver:'{}', field:'{}' and text:'{}'. "
-                      "Assertion is '{}'".format(driver, field, text, assertion.args))
-        raise
+    driver_field_validation(driver, field, log)
+    element = is_field_exist(driver=driver, field=field)
+    return (element.text is not None and text in element.text) or (
+            element.get_attribute("value") is not None
+            and text in element.get_attribute("value"))
 
 
 def is_alert_present(driver=None, until=5):
@@ -79,28 +68,25 @@ def is_alert_present(driver=None, until=5):
     :return: True or False.
     """
     try:
-        assert driver is not None and isinstance(driver, web_drivers_tuple()), "Driver is expected."
+        driver_field_validation(driver, {"type": "id", "value": "fake"}, log)
         if WebDriverWait(driver, until).until(EC.alert_is_present()):
             return True
-    except AssertionError as assertion:
-        logging.error("information.is_alert-present raised an assertion with "
-                      "following input driver:'{}' and until:'{}'. "
-                      "Assertion is '{}'".format(driver, until, assertion.args))
-        raise
     except TimeoutException:
         return False
 
 
-def element_text(driver=None, field=None):
+def element_text(driver=None, field=None, web_element=None):
     """
     Return the text of the element
     :param driver: a selenium web driver
-    :param field: a dictionary
-    :raise AssertionError: from eaifinders.find_element method
+    :param field: a dictionary corresponding to the field to retrieve the text
+    :param web_element: a webElement to search the field from
+    :raise TypeError: from finders.find_element method
+    :raise ValueError: from finders.find_element method
     :raise Exception: if text and value are defined but not identical
     :return: the element text or value, empty if no text or value
     """
-    element = find_element(driver=driver, field=field)
+    element = find_element(driver=driver, field=field, web_element=web_element)
     element_text_ = element.text
     element_value = element.get_attribute("value")
 
@@ -125,15 +111,8 @@ def how_many_windows(driver=None):
     :param driver: a selenium web driver
     :return: the number of windows
     """
-    try:
-        assert driver is not None and isinstance(driver, web_drivers_tuple()),\
-            "Driver is expected."
-        return len(driver.window_handles)
-    except AssertionError as assertion:
-        logging.error("information.is_alert-present raised an assertion with "
-                      "following input driver:'{}'. "
-                      "Assertion is '{}'".format(driver, assertion.args))
-        raise
+    driver_field_validation(driver, {"type": "id", "value": "fake"}, log)
+    return len(driver.window_handles)
 
 
 def is_field_displayed(driver=None, field=None):
@@ -160,16 +139,13 @@ def is_field_enabled(driver=None, field=None, attribute=None):
             Attribute string otherwise
     """
     element = is_field_exist(driver=driver, field=field)
-    if attribute is None:
-        if element is not None:
-            return element.is_enabled()
-        else:
-            return False
-    else:
-        if element is not None:
+    if element is not None:
+        if attribute is not None:
             return element.get_attribute(attribute)
         else:
-            return False
+            return element.is_enabled()
+    else:
+        return False
 
 
 def where_am_i(driver=None):
@@ -178,6 +154,9 @@ def where_am_i(driver=None):
     :param driver: a selenium web driver
     :return: String. The current URL
     """
+    if driver is None or not isinstance(driver, web_drivers_tuple()):
+        raise TypeError("Driver is expected as a WebDriver")
+
     return driver.current_url
 
 

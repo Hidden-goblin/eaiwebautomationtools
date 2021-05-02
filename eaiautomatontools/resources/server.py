@@ -1,7 +1,9 @@
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from os import sep, path
+from pathlib import Path
 import threading
 from logging import getLogger
+from time import sleep
 
 log = getLogger(__name__)
 
@@ -19,7 +21,8 @@ class TestHTTPServerRequestHandler(BaseHTTPRequestHandler):
 
     @property
     def folder(self):
-        return path.split(path.realpath(__file__))[0]
+        folder_path = Path(__file__)
+        return folder_path.parent
 
     @folder.setter
     def folder(self, folder):
@@ -37,31 +40,33 @@ class TestHTTPServerRequestHandler(BaseHTTPRequestHandler):
         try:
             # Check the file extension required and
             # set the right mime type
-            sendReply = False
+            send_reply = False
             if self.path.endswith(".html"):
                 log.debug("serve html file")
                 mimetype = 'text/html'
-                sendReply = True
+                send_reply = True
             if self.path.endswith(".jpg"):
                 mimetype = 'image/jpg'
-                sendReply = True
+                send_reply = True
             if self.path.endswith(".gif"):
                 mimetype = 'image/gif'
-                sendReply = True
+                send_reply = True
             if self.path.endswith(".js"):
                 mimetype = 'application/javascript'
-                sendReply = True
+                send_reply = True
             if self.path.endswith(".css"):
                 mimetype = 'text/css'
-                sendReply = True
+                send_reply = True
             if self.path == "/close":
                 log.debug("close")
 
-            if sendReply:
+            if send_reply:
                 # Open the static file requested and send it
                 log.debug("current dir is '{}'".format(path.realpath(__file__)))
                 log.debug("Before join '{}'".format(self.folder))
-                file_name = "{}{}{}".format(self.folder, sep, self.path)
+                # file_name = "{}{}{}".format(self.folder, sep, self.path)
+                file_name = self.folder / self.path.lstrip("/")
+                # print(file_name)
                 log.debug("Filename '{}'".format(file_name))
                 with open(file_name, "br") as f:
                     self.send_response(200)
@@ -78,7 +83,7 @@ class TestHTTPServerRequestHandler(BaseHTTPRequestHandler):
 
 class TestServer:
     def __init__(self):
-        self.__server_address = ('127.0.0.1', 8081)
+        self.__server_address = ('0.0.0.0', 8081)
         self.__httpd = HTTPServer(self.__server_address, TestHTTPServerRequestHandler)
         self.__thread = None
 
@@ -87,8 +92,9 @@ class TestServer:
         self.__thread.daemon = True
         self.__thread.start()
         log.debug("Starting server")
+        sleep(5)
 
     def stop(self):
         self.__httpd.shutdown()
         self.__thread = None
-        log.debug("Stoping server")
+        log.debug("Stopping server")

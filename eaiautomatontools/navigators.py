@@ -24,17 +24,18 @@ def go_to_url(driver=None, url=None):
     return 0
 
 
-def enter_frame(driver=None, field=None):
+def enter_frame(driver=None, field=None, web_element=None):
     """
     Switch to a frame given by its field identifier
     :param driver: a selenium web driver
     :param field: a dictionary like {"type":"id", "value":"myID"}
+    :param web_element: a web_element from which to search the frame
     :raise AssertionError: if driver is not defined
     :return: 0 if succeed
     """
     assert driver is not None and isinstance(driver, web_drivers_tuple()), "Driver is expected."
 
-    driver.switch_to.frame(find_element(driver=driver, field=field))
+    driver.switch_to.frame(find_element(driver=driver, field=field, web_element=web_element))
     return 0
 
 

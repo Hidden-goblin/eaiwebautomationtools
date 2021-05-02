@@ -2,18 +2,18 @@
 
 Present the finder utilities for Selenium automaton.
 
-
 ## Background
 
 Launch a test web server serving controlled web pages on localhost port 8081
 
 Use the python resources server.
 
-    >>> from eaiautomatontools.resources.server import TestServer
+    >>> from eaiautomatontools.resources.app import Server
 
-    >>> myserver = TestServer()
+    >>> myserver = Server()
 
     >>> myserver.start()
+    ...
 
 Instantiate a web driver using the eaiautomatontools.browserServer
 
@@ -28,13 +28,11 @@ Use a default browser such as Chrome in 32 bit version
 Serve the web driver
 
     >>> myWebDriver.serve()
-    <BLANKLINE>
-    <BLANKLINE>
     0
 
 Request the web server IP 127.0.0.1:8081
 
-    >>> myWebDriver.go_to("http://127.0.0.1:8081")
+    >>> myWebDriver.go_to("http://localhost:8081")
     ...
     0
 
@@ -72,13 +70,14 @@ Request the web server IP 127.0.0.1:8081
     'The tables test page'
 
 ### Find by tag_name
+
     >>> myElement = find_element(driver=myWebDriver.webdriver, field={"type":"tag_name","value":"a"})
 
     >>> type(myElement)
     <class 'selenium.webdriver.remote.webelement.WebElement'>
 
 It will return the first tag found.
-   
+
     >>> myElement.text
     'second page'
 
@@ -93,6 +92,7 @@ It will return the first tag found.
     'second page'
 
 ### Find by partial_link_text
+
     >>> myElement = find_element(driver=myWebDriver.webdriver, field={"type":"partial_link_text","value":"second"})
 
     >>> type(myElement)
@@ -102,6 +102,7 @@ It will return the first tag found.
     'second page'
 
 ### Find by css
+
     >>> myElement = find_element(driver=myWebDriver.webdriver, field={"type":"css","value":"div"})
 
     >>> type(myElement)
@@ -120,6 +121,7 @@ Another example
     'tables test page'
 
 ### Find by xpath
+
     >>> myElement = find_element(driver=myWebDriver.webdriver, field={"type":"xpath","value":"html/body/div[2]"})
 
     >>> type(myElement)
@@ -129,7 +131,8 @@ Another example
     'The tables test page'
 
 ### Find an element giving a text value
-    >>> myWebDriver.go_to("http://127.0.0.1:8081/forms.html")
+
+    >>> myWebDriver.go_to("http://localhost:8081/forms.html")
     ...
     0
 
@@ -140,7 +143,7 @@ Another example
 
 ## Not found element
 
-    >>> myWebDriver.go_to("http://127.0.0.1:8081")
+    >>> myWebDriver.go_to("http://localhost:8081")
     ...
     0
 
@@ -191,32 +194,53 @@ Another example
     >>> myElement = find_element(field={"type":"xpath","value":"html/body/div[2]"})
     Traceback (most recent call last):
     ...
-    AssertionError: Driver is expected.
+    TypeError: Driver is expected
 
 ## The field value is mandatory
-    
+
     >>> myElement = find_element(driver=myWebDriver.webdriver)
     Traceback (most recent call last):
     ...
-    AssertionError: Field must be a dictionary
+    TypeError: None is not a dictionary
 
 ## The field value must contains a type and a value key
-    
+
     >>> myElement = find_element(driver=myWebDriver.webdriver, field={"type":"xpath"})
     Traceback (most recent call last):
     ...
-    KeyError: KeyError("The field argument doesn't contains either the 'type' or 'value' key.")
+    KeyError: "The field argument doesn't contains either the 'type' or 'value' key."
 
     >>> myElement = find_element(driver=myWebDriver.webdriver, field={"value":"html/body/span"})
     Traceback (most recent call last):
     ...
-    KeyError: KeyError("The field argument doesn't contains either the 'type' or 'value' key.")
+    KeyError: "The field argument doesn't contains either the 'type' or 'value' key."
 
+## The field key `type` value must be one of a limited list
+
+`type` must be in a limited list of values:
+
+* id: when you want to retrieve the field by its id
+* name: when you want to retrieve the field by its name attribute's value
+* class_name: when you want to retrieve the field by one of its class value
+* link_text: when you want to retrieve the field by the exact match on the link text
+* partial_link_text: when you want to retrieve the field by a sub string of the link text
+* css: when you want to retrieve the field by its css path
+* xpath: when you want to retrieve the field by its xpath
+* tag_name: when you want to retrieve the field by its tag name
+
+
+    >>> myElement = find_element(driver=myWebDriver.webdriver, field={"type":"test", "value": "test"})
+    Traceback (most recent call last):
+    ...
+    ValueError: The field type is not one the expected: '('id', 'name', 'class_name', 'link_text', 'css', 'partial_link_text', 'xpath', 'tag_name')
+    
 TearDown
 -------------------------
 Close all windows
+
     >>> myWebDriver.close()
     0
 
 Stop the web server
+
     >>> myserver.stop()

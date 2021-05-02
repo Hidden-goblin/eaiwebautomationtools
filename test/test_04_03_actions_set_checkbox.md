@@ -9,11 +9,12 @@ Launch a test web server serving controlled web pages on localhost port 8081
 
 Use the python resources server.
 
-    >>> from eaiautomatontools.resources.server import TestServer
+    >>> from eaiautomatontools.resources.app import Server
 
-    >>> myserver = TestServer()
+    >>> myserver = Server()
 
     >>> myserver.start()
+    ...
 
 Instantiate a web driver using the eaiautomatontools.browserServer
 
@@ -29,13 +30,13 @@ Use a default browser such as Chrome in 32 bit version
 Serve the web driver
 
     >>> myWebDriver.serve()
-    <BLANKLINE>
-    <BLANKLINE>
     0
+  
+  
 
 Open the form test page
 
-    >>> myWebDriver.go_to("http://127.0.0.1:8081/forms.html")
+    >>> myWebDriver.go_to("http://localhost:8081/forms.html")
     0
 
 Import the find_element tool
@@ -58,7 +59,7 @@ Import the set_checkbox tool
     >>> set_checkbox(field={"type":"id","value":"check"}, is_checked=True)
     Traceback (most recent call last):
     ...
-    AssertionError: Driver is expected.
+    TypeError: Driver is expected
 
 ### The field is not valid
 
@@ -67,21 +68,21 @@ Import the set_checkbox tool
     >>> set_checkbox(driver=myWebDriver.webdriver, field={"typ":"id","value":"check"}, is_checked=True)
     Traceback (most recent call last):
     ...
-    AssertionError: Field '{'typ': 'id', 'value': 'check'}' is not a valid field
+    KeyError: "The field argument doesn't contains either the 'type' or 'value' key."
 
 #### Incorrect type key value not in
 
     >>> set_checkbox(driver=myWebDriver.webdriver, field={"type":"if","value":"check"}, is_checked=True)
     Traceback (most recent call last):
     ...
-    AssertionError: Field '{'type': 'if', 'value': 'check'}' is not a valid field
+    ValueError: The field type is not one the expected: '('id', 'name', 'class_name', 'link_text', 'css', 'partial_link_text', 'xpath', 'tag_name')
 
 #### is_checked is a boolean
 
     >>> set_checkbox(driver=myWebDriver.webdriver, field={"type":"id","value":"check"}, is_checked='True')
     Traceback (most recent call last):
     ...
-    AssertionError: is_checked is expected to be a boolean.
+    TypeError: is_checked is expected to be a boolean.
 
 ## Exception errors
 
@@ -90,7 +91,8 @@ Import the set_checkbox tool
     >>> set_checkbox(driver=myWebDriver.webdriver, field={"type":"id","value":"checkbox"}, is_checked=True)
     Traceback (most recent call last):
     ...
-    Exception: Element designed by field '{'type': 'id', 'value': 'checkbox'}' could not be located.
+    selenium.common.exceptions.NoSuchElementException: Message: Element designed by field '{'type': 'id', 'value': 'checkbox'}' could not be located.
+    <BLANKLINE>
 
 ### The element can't be checked
 

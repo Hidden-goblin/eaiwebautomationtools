@@ -9,11 +9,12 @@ Launch a test web server serving controlled web pages on localhost port 8081
 
 Use the python resources server.
 
-    >>> from eaiautomatontools.resources.server import TestServer
+    >>> from eaiautomatontools.resources.app import Server
 
-    >>> myserver = TestServer()
+    >>> myserver = Server()
 
     >>> myserver.start()
+    ...
 
 Instantiate a web driver using the eaiautomatontools.browserServer
 
@@ -28,13 +29,13 @@ Use a default browser such as Chrome in 32 bit version
 Serve the web driver
 
     >>> myWebDriver.serve()
-    <BLANKLINE>
-    <BLANKLINE>
     0
+  
+  
 
 Open the form test page
 
-    >>> myWebDriver.go_to("http://127.0.0.1:8081")
+    >>> myWebDriver.go_to("http://localhost:8081")
     0
 
 Import the find_element tool
@@ -52,7 +53,7 @@ You can click a link
     >>> click_element(driver=myWebDriver.webdriver,field={'type':'id','value':'tables'})
     0
 
-    >>> myWebDriver.go_to("http://127.0.0.1:8081")
+    >>> myWebDriver.go_to("http://localhost:8081")
     0
 
 You can even click a div
@@ -66,7 +67,7 @@ You can even click a div
     >>> click_element(field={"type":"id", "value":"name"})
     Traceback (most recent call last):
     ...
-    AssertionError: Driver is expected.
+    TypeError: Driver is expected
 
 ### The field is not valid.
 
@@ -75,21 +76,22 @@ You can even click a div
     >>> click_element(driver=myWebDriver.webdriver, field={"type":"idl", "value":"name"})
     Traceback (most recent call last):
     ...
-    AssertionError: Field '{'type': 'idl', 'value': 'name'}' is not a valid field
+    ValueError: The field type is not one the expected: '('id', 'name', 'class_name', 'link_text', 'css', 'partial_link_text', 'xpath', 'tag_name')
 
 #### Incorrect keys value.
 
     >>> click_element(driver=myWebDriver.webdriver, field={"typ":"id", "value":"name"})
     Traceback (most recent call last):
     ...
-    AssertionError: Field '{'typ': 'id', 'value': 'name'}' is not a valid field
+    KeyError: "The field argument doesn't contains either the 'type' or 'value' key."
 
 ## Exceptions
 
     >>> click_element(driver=myWebDriver.webdriver,field={'type':'id','value':'tab'})
     Traceback (most recent call last):
     ...
-    Exception: Element designed by field '{'type': 'id', 'value': 'tab'}' could not be located.
+    selenium.common.exceptions.NoSuchElementException: Message: Element designed by field '{'type': 'id', 'value': 'tab'}' could not be located.
+    <BLANKLINE>
 
 ## Teardown
 

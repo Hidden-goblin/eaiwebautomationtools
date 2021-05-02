@@ -9,11 +9,12 @@ Launch a test web server serving controlled web pages on localhost port 8081
 
 Use the python resources server.
 
-    >>> from eaiautomatontools.resources.server import TestServer
+    >>> from eaiautomatontools.resources.app import Server
 
-    >>> myserver = TestServer()
+    >>> myserver = Server()
 
     >>> myserver.start()
+    ...
 
 Instantiate a web driver using the eaiautomatontools.browserServer
 
@@ -28,13 +29,13 @@ Use a default browser such as Chrome in 32 bit version
 Serve the web driver
 
     >>> myWebDriver.serve()
-    <BLANKLINE>
-    <BLANKLINE>
     0
+  
+  
 
 Request the web server IP 127.0.0.1:8081
 
-    >>> myWebDriver.go_to("http://127.0.0.1:8081")
+    >>> myWebDriver.go_to("http://localhost:8081")
     ...
     0
 
@@ -169,25 +170,25 @@ Request the web server IP 127.0.0.1:8081
     >>> myElements = find_elements(field={"type":"xpath","value":"html/body/div[2]"})
     Traceback (most recent call last):
     ...
-    AssertionError: Driver is expected.
+    TypeError: Driver is expected
 
 ## Field is mandatory
 
     >>> myElements = find_elements(driver=myWebDriver.webdriver)
     Traceback (most recent call last):
     ...
-    AssertionError: Field must be a dictionary
+    TypeError: None is not a dictionary
 
 ## Field type and value key are mandatory
     >>> myElements = find_elements(driver=myWebDriver.webdriver, field={"value":"html/body/input"})
     Traceback (most recent call last):
     ...
-    KeyError: KeyError("The field argument doesn't contains either the 'type' or 'value' key.")
+    KeyError: "The field argument doesn't contains either the 'type' or 'value' key."
 
     >>> myElements = find_elements(driver=myWebDriver.webdriver, field={"type":"xpath"})
     Traceback (most recent call last):
     ...
-    KeyError: KeyError("The field argument doesn't contains either the 'type' or 'value' key.")
+    KeyError: "The field argument doesn't contains either the 'type' or 'value' key."
 
 ## TearDown
 
