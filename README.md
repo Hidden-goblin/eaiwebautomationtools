@@ -136,6 +136,12 @@ To Do
 
 Release Notes
 =============
+
+- version 1.0.6:
+    - new test server: now using flask as a test server
+    - use mkdocs and the doctest test repository in order to build the documentation
+    - add diver option setter
+    - add a generic move_to web element method
 - version 1.0.5: Sorry for the interruption 
     - use webdriver manager in order to retrieve webdrivers. 
     - Enhance the webdriver handling.
