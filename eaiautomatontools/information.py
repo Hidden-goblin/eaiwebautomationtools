@@ -1,60 +1,55 @@
 # -*- coding: utf-8 -*-
+import polling2
+from polling2 import PollingException
 from logging import getLogger
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.common.exceptions import TimeoutException
-from .drivers_tools import driver_field_validation, web_drivers_tuple
+from selenium.common.exceptions import NoSuchElementException, TimeoutException
+from .drivers_tools import driver_field_validation, web_drivers_tuple, web_element_validation
 from .finders import find_element
 
 
 log = getLogger(__name__)
 
 
-def is_field_exist(driver=None, field=None, until=5):
+def is_field_exist(driver=None, field=None, web_element=None, until=5):
     """
     Test if the field given as a {"type":"id","value":"toto"} dictionary exists.
     :param driver: a selenium web driver
-    :param field: a dictionary
-    :param until: an int as the wait time
+    :param field: a dictionary representing the web element to search
+    :param web_element: a web_element to search from
+    :param until: an int as the wait time in second
     :raise TypeError: driver isn't of the expected type
     :return: a web element if exist, None otherwise
     """
     try:
         driver_field_validation(driver, field, log)
+        web_element_validation(web_element, log)
 
-        switcher = {
-            "id": By.ID,
-            "name": By.NAME,
-            "class_name": By.CLASS_NAME,
-            "css": By.CSS_SELECTOR,
-            "link_text": By.LINK_TEXT,
-            "partial_link_text": By.PARTIAL_LINK_TEXT,
-            "tag_name": By.TAG_NAME,
-            "xpath": By.XPATH
-        }
+        return polling2.poll(lambda: find_element(driver, field, web_element),
+                             ignore_exceptions=(NoSuchElementException, ),
+                             step=0.2,
+                             timeout=until)
 
-        return WebDriverWait(driver, until).until(
-            EC.presence_of_element_located((switcher[field["type"]], field["value"])))
-
-    except TimeoutException:
+    except polling2.TimeoutException:
         log.warning(f"information.is_field_exist raised a TimeoutException for "
                     f"the following field '{field}'")
         return None
 
 
-def is_field_contains_text(driver=None, field=None, text=None):
+def is_field_contains_text(driver=None, field=None, web_element=None, text=None):
     """
     Check if the given field contains the text either as a DOM text or value text.
     {"type":"id","value":"toto"}
     :param driver: a selenium web driver
-    :param field: a dictionary
+    :param field: a dictionary representing the web element to search
+    :param web_element: a web_element to search from
     :param text: a string for the text to be in the field
     :raise AssertionError: driver isn't of the expected type
     :return: True if the field contains the text, False otherwise
     """
-    driver_field_validation(driver, field, log)
-    element = is_field_exist(driver=driver, field=field)
+    element = is_field_exist(driver=driver, field=field, web_element=web_element)
     return (element.text is not None and text in element.text) or (
             element.get_attribute("value") is not None
             and text in element.get_attribute("value"))
@@ -115,30 +110,32 @@ def how_many_windows(driver=None):
     return len(driver.window_handles)
 
 
-def is_field_displayed(driver=None, field=None):
+def is_field_displayed(driver=None, field=None, web_element=None):
     """
     Check if the element is displayed. You may not interact with it.
     :param driver: a selenium web driver
-    :param field: a dictionary
+    :param field: a dictionary corresponding to the field to retrieve the text
+    :param web_element: a webElement to search the field from
     :return: Boolean. True if element is displayed, false otherwise.
     """
-    element = is_field_exist(driver=driver, field=field)
+    element = is_field_exist(driver=driver, field=field, web_element=web_element)
     if element is not None:
         return element.is_displayed()
     else:
         return False
 
 
-def is_field_enabled(driver=None, field=None, attribute=None):
+def is_field_enabled(driver=None, field=None, web_element=None, attribute=None):
     """
     Check if the element is enabled.
-    :param attribute: the attribute to check for enabled
     :param driver: a selenium web driver
-    :param field: a dictionary
+    :param field: a dictionary representing the web element to search
+    :param web_element: a web_element to search from
+    :param attribute: the attribute to check for enabled
     :return: Boolean. True if element is enabled, false otherwise for non attribute.
             Attribute string otherwise
     """
-    element = is_field_exist(driver=driver, field=field)
+    element = is_field_exist(driver=driver, field=field, web_element=web_element)
     if element is not None:
         if attribute is not None:
             return element.get_attribute(attribute)
@@ -160,15 +157,16 @@ def where_am_i(driver=None):
     return driver.current_url
 
 
-def is_checkbox_checked(driver=None, field=None, is_angular=False):
+def is_checkbox_checked(driver=None, field=None, web_element=None, is_angular=False):
     """
     Return the checkbox status
     :param driver: a selenium web driver
-    :param field: a dictionary
+    :param field: a dictionary representing the web element to search
+    :param web_element: a web_element to search from
     :param is_angular: boolean
     :return: boolean
     """
-    element = is_field_exist(driver=driver, field=field)
+    element = is_field_exist(driver=driver, field=field, web_element=web_element)
 
     if is_angular:
         return bool(element.get_attribute("ng-reflect-checked"))
@@ -176,19 +174,22 @@ def is_checkbox_checked(driver=None, field=None, is_angular=False):
         return bool(element.get_attribute("checked"))
 
 
-def retrieve_tabular(driver=None, field=None, row_and_col=("tr", "td", "th")) -> list:
+def retrieve_tabular(driver=None,
+                     field=None, web_element=None, row_and_col=("tr", "td", "th")) -> list:
     """
     Return the tabular as a list of elements.
     Elements are either lists or dictionaries depending on the presence of headers
     :param driver: a selenium web driver
-    :param row_and_col: a tuple of row and col tags plus header tag. Defaulted to ('tr', 'td', 'th').
+    :param field: a dictionary representing the web element to search
+    :param web_element: a web_element to search from
+    :param row_and_col: a tuple of row and col tags plus header tag. Defaulted to ('tr', 'td',
+    'th').
      Please mind the order. ROW, COL, COL HEADER
-    :param field: a dictionary
     :return: list
     """
-    tabular = find_element(driver, field)
+    tabular = find_element(driver, field, web_element=web_element)
     rows = tabular.find_elements_by_tag_name(row_and_col[0])
-    tabular_as_list = list()
+    tabular_as_list = []
 
     for row in rows:
         columns = row.find_elements_by_tag_name(row_and_col[1])

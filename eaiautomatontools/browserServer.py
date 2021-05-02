@@ -366,32 +366,43 @@ class BrowserServer:
     def is_alert_present(self, until=5):
         return is_alert_present(driver=self.webdriver, until=until)
 
-    def is_field_exist(self, field=None, until=5):
-        return is_field_exist(driver=self.webdriver, field=field, until=until)
+    def is_field_exist(self, field=None, web_element=None, until=5):
+        return is_field_exist(driver=self.webdriver,
+                              field=field,
+                              web_element=web_element,
+                              until=until)
 
-    def is_field_contains_text(self, field=None, text=None):
-        return is_field_contains_text(driver=self.webdriver, field=field, text=text)
+    def is_field_contains_text(self, field=None, web_element=None, text=None):
+        return is_field_contains_text(driver=self.webdriver,
+                                      field=field,
+                                      web_element=web_element,
+                                      text=text)
 
-    def element_text(self, field=None):
-        return element_text(driver=self.webdriver, field=field)
+    def element_text(self, field=None, web_element=None):
+        return element_text(driver=self.webdriver,
+                            field=field,
+                            web_element=web_element)
 
-    def is_field_displayed(self, field=None):
-        return is_field_displayed(driver=self.webdriver, field=field)
+    def is_field_displayed(self, field=None, web_element=None):
+        return is_field_displayed(driver=self.webdriver, field=field, web_element=web_element)
 
-    def is_field_enabled(self, field=None, attribute=None):
-        return is_field_enabled(driver=self.webdriver, field=field, attribute=attribute)
+    def is_field_enabled(self, field=None, web_element=None, attribute=None):
+        return is_field_enabled(driver=self.webdriver, field=field, web_element=web_element,
+                                attribute=attribute)
 
     def how_many_windows(self):
         return how_many_windows(driver=self.webdriver)
 
-    def retrieve_tabular(self, field=None, row_and_col=("tr", "td", "th")):
-        return retrieve_tabular(driver=self.webdriver, field=field, row_and_col=row_and_col)
+    def retrieve_tabular(self, field=None, web_element=None, row_and_col=("tr", "td", "th")):
+        return retrieve_tabular(driver=self.webdriver, field=field, web_element=web_element,
+                                row_and_col=row_and_col)
 
     # TODO add unit test
     def where_am_i(self):
         return where_am_i(driver=self.webdriver)
 
     # TODO add unit test
-    def is_checkbox_checked(self, field=None, is_angular=False):
-        return is_checkbox_checked(driver=self.webdriver, field=field, is_angular=is_angular)
+    def is_checkbox_checked(self, field=None, web_element=None, is_angular=False):
+        return is_checkbox_checked(driver=self.webdriver, field=field, web_element=web_element,
+                                   is_angular=is_angular)
 

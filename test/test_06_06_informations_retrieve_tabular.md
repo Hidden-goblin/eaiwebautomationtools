@@ -60,14 +60,14 @@ It works based on the `tr` and `td` tags.
 
 And it's case-insensitive
 
-    >>> tab3 = retrieve_tabular(myWebDriver.webdriver, {"type": "xpath", "value": "/html/body/table[1]"}, ('TR', 'TD', 'TH'))
+    >>> tab3 = retrieve_tabular(myWebDriver.webdriver, {"type": "xpath", "value": "/html/body/table[1]"}, row_and_col=('TR', 'TD', 'TH'))
     >>> tab3
     [['First name', 'Last name'], ['John', 'Doe'], ['Jane', 'Doe']]
 
 ## Error cases
 
 ### Row and col tags are not found
-    >>> tab = retrieve_tabular(myWebDriver.webdriver, {"type": "xpath", "value": "/html/body/table[1]"}, ('XR', 'XD', 'XH'))
+    >>> tab = retrieve_tabular(myWebDriver.webdriver, {"type": "xpath", "value": "/html/body/table[1]"}, row_and_col=('XR', 'XD', 'XH'))
     >>> tab
     []
 
