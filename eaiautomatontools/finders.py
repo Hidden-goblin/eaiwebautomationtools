@@ -116,7 +116,7 @@ def find_from_elements(driver=None, field=None, text=None, web_element=None):
     if not isinstance(text, str):
         raise AttributeError("text must be a string")
     if not text:
-        raise AttributeError("text must be non-empty")
+        raise ValueError("text must be non-empty")
 
     for element in elements:
         if element.text == text:
@@ -135,7 +135,7 @@ def find_from_elements(driver=None, field=None, text=None, web_element=None):
     return return_element
 
 
-@deprecated(version="1.0.5", reason="You should user find_element with a web_element")
+@deprecated(version="1.0.5", reason="You should use find_element with a web_element")
 def find_sub_element_from_element(web_element=None, field=None):
     """
     Return a sub element from the element

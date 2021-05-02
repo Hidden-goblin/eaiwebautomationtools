@@ -72,7 +72,7 @@ Import the set_checkbox tool
     >>> select_in_dropdown(field={'type':'id','value':'county'},value="Meath")
     Traceback (most recent call last):
     ...
-    AssertionError: Driver is expected.
+    TypeError: Driver is expected
 
 ### The field is not valid
 
@@ -81,14 +81,14 @@ Import the set_checkbox tool
     >>> select_in_dropdown(driver=myWebDriver.webdriver, field={'type':'id','val':'county'},value="Meath")
     Traceback (most recent call last):
     ...
-    AssertionError: Field '{'type': 'id', 'val': 'county'}' is not a valid field
+    KeyError: "The field argument doesn't contains either the 'type' or 'value' key."
 
 #### Incorrect type key value not in
 
     >>> select_in_dropdown(driver=myWebDriver.webdriver, field={'type':'if','value':'county'},visible_text="County Kilkenny")
     Traceback (most recent call last):
     ...
-    AssertionError: Field '{'type': 'if', 'value': 'county'}' is not a valid field
+    ValueError: The field type is not one the expected: '('id', 'name', 'class_name', 'link_text', 'css', 'partial_link_text', 'xpath', 'tag_name')
 
 ## Exception errors
 

@@ -74,7 +74,7 @@ The web driver is mandatory
     >>> is_field_exist()
     Traceback (most recent call last):
     ...
-    AssertionError: Driver is expected.
+    TypeError: Driver is expected
 
 
 ## Teardown

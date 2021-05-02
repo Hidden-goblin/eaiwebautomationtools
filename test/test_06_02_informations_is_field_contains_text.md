@@ -88,7 +88,7 @@ The web driver is mandatory
     >>> is_field_contains_text()
     Traceback (most recent call last):
     ...
-    AssertionError: Driver is expected.
+    TypeError: Driver is expected
 
 
 ## Teardown

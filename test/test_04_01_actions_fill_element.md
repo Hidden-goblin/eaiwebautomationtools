@@ -81,7 +81,7 @@ Check the textfield has been updated.
     >>> fill_element(field={"type":"id", "value":"name"},value="my name")
     Traceback (most recent call last):
     ...
-    AssertionError: Driver is expected.
+    TypeError: Driver is expected
 
 ### The field is not valid.
 
@@ -90,19 +90,19 @@ Check the textfield has been updated.
     >>> fill_element(driver=myWebDriver.webdriver, field={"type":"idl", "value":"name"},value="my name")
     Traceback (most recent call last):
     ...
-    AssertionError: Field '{'type': 'idl', 'value': 'name'}' is not a valid field
+    ValueError: The field type is not one the expected: '('id', 'name', 'class_name', 'link_text', 'css', 'partial_link_text', 'xpath', 'tag_name')
 
 ### Incorrect keys value.
 
     >>> fill_element(driver=myWebDriver.webdriver, field={"typ":"id", "value":"name"},value="my name")
     Traceback (most recent call last):
     ...
-    AssertionError: Field '{'typ': 'id', 'value': 'name'}' is not a valid field
+    KeyError: "The field argument doesn't contains either the 'type' or 'value' key."
 
     >>> fill_element(driver=myWebDriver.webdriver, field={"type":"id", "val":"name"},value="my name")
     Traceback (most recent call last):
     ...
-    AssertionError: Field '{'type': 'id', 'val': 'name'}' is not a valid field
+    KeyError: "The field argument doesn't contains either the 'type' or 'value' key."
 
 
 ## Exception case
@@ -120,7 +120,8 @@ The element can't be found
     >>> fill_element(driver=myWebDriver.webdriver, field={"type":"id", "value":"lab-nam"},value="my name")
     Traceback (most recent call last):
     ...
-    Exception: actions.fill_element raised an exception. Exception is 'Element designed by field '{'type': 'id', 'value': 'lab-nam'}' could not be located.'
+    selenium.common.exceptions.NoSuchElementException: Message: Field '{'type': 'id', 'value': 'lab-nam'}' could not be found for filling
+    <BLANKLINE>
 
 ## Teardown
 ------------------------------

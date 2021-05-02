@@ -30,26 +30,21 @@ def fill_elements(driver=None, fields=None, web_element=None, data=None):
     :return: 0 if success
     """
     try:
-        assert all(key in fields.keys() for key in
-                   data.keys()), \
-            "Missing fields for the given data. Data keys '{}'. Fields keys '{}'".format(
-                data.keys(),
-                fields.keys())  # Check that the fields dictionary contains enough keys
+        if any(key not in fields.keys() for key in data.keys()):
+            log.error(f"Missing fields for the given data. "
+                      f"Data keys '{data.keys()}'. "
+                      f"Fields keys '{fields.keys()}'")
+            raise KeyError("Data keys are not included in Fields keys")
 
         for key in data:
             fill_element(driver=driver, field=fields[key], web_element=web_element, value=data[key])
-
         return 0
-    except AssertionError as assertion:
-        log.error("actions.fill_elements raised an assertion with following"
-                  " input driver:'{}', fields:'{}' and data:'{}'."
-                  " Assertion is '{}'".format(driver, fields, data, assertion.args))
-        raise
-    except InvalidElementStateException:
-        raise
-    except Exception as exception:
-        logging.error(exception.args)
-        raise Exception(exception.args[0]) from None
+    except InvalidElementStateException as invalid_element:
+        log.error(invalid_element)
+        raise InvalidElementStateException(f"Element '{fields[key]}' must be user-editable") from None
+    except NoSuchElementException:
+        log.error(f"Field '{fields[key]}' could not be found for filling")
+        raise NoSuchElementException(f"Field '{fields[key]}' could not be found for filling") from None
 
 
 def fill_element(driver=None, field=None, web_element=None, value=None):
@@ -59,13 +54,14 @@ def fill_element(driver=None, field=None, web_element=None, value=None):
     :param driver: a selenium web driver
     :param field: a dictionary
     :param value: a string or castable to string
-    :raise AssertionError: driver is not define, field fails validation
+    :raise AttributeError: web driver is not set or field is not a dictionary
+    :raise ValueError: field doesn't contains the expected field
     :raise InvalidElementStateException: if the element is not user-editable
-    :raise Exception: web element not found
+    :raise NoSuchElementException: element to be filled cannot be found
     :return: 0 if success
     """
     try:
-        driver_field_validation(driver, field)
+        driver_field_validation(driver, field, log)
         iteration = 0
         while iteration < 5:
             try:
@@ -81,23 +77,12 @@ def fill_element(driver=None, field=None, web_element=None, value=None):
                 log.info("StaleElementReferenceException retry after 100ms sleep")
                 iteration += 1
                 sleep(0.1)
-    except AssertionError as assertion:
-        log.error("actions.fill_element raised an assertion with following"
-                  " input driver:'{}', field:'{}' and value:'{}'."
-                  " Assertion is '{}'".format(driver, field, value, assertion.args))
-        raise
     except InvalidElementStateException as invalid_element:
         log.error(invalid_element)
-        invalid_element.args = ("Element '{}' must be user-editable".format(field),)
-        raise InvalidElementStateException(
-            "Element '{}' must be user-editable".format(field)) from None
-    except Exception as exception:
-        logging.error(
-            "actions.fill_element raised an exception. Exception is '{}'".format(
-                exception.args))
-        raise Exception(
-            "actions.fill_element raised an exception. Exception is '{}'".format(
-                exception.args[0])) from None
+        raise InvalidElementStateException(f"Element '{field}' must be user-editable") from None
+    except NoSuchElementException:
+        log.error(f"Field '{field}' could not be found for filling")
+        raise NoSuchElementException(f"Field '{field}' could not be found for filling") from None
 
 
 def select_in_dropdown(driver=None, field=None, visible_text=None, value=None):
@@ -108,7 +93,7 @@ def select_in_dropdown(driver=None, field=None, visible_text=None, value=None):
     :raise AssertionError: driver is not define, field is not valid
     :return:
     """
-    driver_field_validation(driver, field)
+    driver_field_validation(driver, field, log)
 
     try:
         iteration = 0
@@ -178,22 +163,18 @@ def click_element(driver=None, field=None, web_element: WebElement = None):
     :raise AssertionError: driver is not define, field is not valid
     :return: 0 if success
     """
-    try:
-        driver_field_validation(driver, field)
-        web_element_validation(web_element)
-        iteration = 0
-        while iteration < 5:
-            try:
-                web_element = find_element(driver=driver, field=field, web_element=web_element)
-                web_element.click()
-                return 0
-            except StaleElementReferenceException:
-                log.info("StaleElementReferenceException retry after 100ms sleep")
-                iteration += 1
-                sleep(0.1)
-    except Exception as exception:
-        logging.error(exception.args)
-        raise Exception(exception.args[0]) from None
+    driver_field_validation(driver, field, log)
+    web_element_validation(web_element, log)
+    iteration = 0
+    while iteration < 5:
+        try:
+            web_element = find_element(driver=driver, field=field, web_element=web_element)
+            web_element.click()
+            return 0
+        except StaleElementReferenceException:
+            log.info("StaleElementReferenceException retry after 100ms sleep")
+            iteration += 1
+            sleep(0.1)
 
 
 def set_checkbox(driver=None, field=None, is_checked=None):
@@ -202,30 +183,27 @@ def set_checkbox(driver=None, field=None, is_checked=None):
     :param driver: a selenium web driver
     :param field: a field identifier as a dictionary
     :param is_checked: the field check value as a boolean (True/False)
-    :raise AssertionError: driver is not define, field is not valid, is_checked is not a boolean
+    :raise AttributeError: driver is not define, field is not valid, is_checked is not a boolean
+    :raise ValueError: field dictionary doesn't contain the minimal keys
     :return: 0 if success
     """
-    driver_field_validation(driver, field)
+    driver_field_validation(driver, field, log)
     if not isinstance(is_checked, bool):
-        raise AttributeError("is_checked is expected to be a boolean.")
+        log.error(f"is_checked is expected to be a boolean. Get {type(is_checked)}")
+        raise TypeError("is_checked is expected to be a boolean.")
 
-    try:
-        elem = find_element(driver=driver, field=field)
-        current_state = bool(elem.get_attribute("checked"))
-        if current_state is not is_checked:
-            elem.click()
+    elem = find_element(driver=driver, field=field)
+    current_state = bool(elem.get_attribute("checked"))
+    if current_state is not is_checked:
+        elem.click()
 
-        # Check if the element has been set in the expected status
-        current_state = bool(elem.get_attribute("checked"))
-        if current_state is not is_checked:
-            raise Exception(
-                "The element '{}' can't be set to the expected status '{}'.".format(field,
-                                                                                    is_checked))
-        return 0
-
-    except Exception as exception:
-        logging.error(exception.args)
-        raise Exception(exception.args[0]) from None
+    # Check if the element has been set in the expected status
+    current_state = bool(elem.get_attribute("checked"))
+    if current_state is not is_checked:
+        log.error(f"The element '{field}' can't be set to the expected status '{is_checked}'.")
+        raise Exception(
+            f"The element '{field}' can't be set to the expected status '{is_checked}'.")
+    return 0
 
 
 def hover_element(driver=None, field=None):
@@ -236,7 +214,7 @@ def hover_element(driver=None, field=None):
     :raise AssertionError: driver is not define, field is not valid
     :return: 0 if success
     """
-    driver_field_validation(driver, field)
+    driver_field_validation(driver, field, log)
     try:
         elem = find_element(driver=driver, field=field)
         hover = ActionChains(driver).move_to_element(elem)
@@ -256,7 +234,7 @@ def select_in_elements(driver=None, field=None, displayed_text=None):
     :param displayed_text: a string
     :return: 0 if success
     """
-    driver_field_validation(driver, field)
+    driver_field_validation(driver, field, log)
     if displayed_text is None or not isinstance(displayed_text, str):
         raise AttributeError("Displayed text must be a non-empty string")
     try:

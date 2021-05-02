@@ -81,7 +81,7 @@ The web driver is mandatory
     >>> element_text()
     Traceback (most recent call last):
     ...
-    AssertionError: Driver is expected.
+    TypeError: Driver is expected
 
 
 ## Exception

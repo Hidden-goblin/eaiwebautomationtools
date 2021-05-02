@@ -1,0 +1,31 @@
+site_name: EAIWEBTOOLS
+docs_dir: test
+theme: readthedocs
+nav:
+  - Home: README.md
+  - Browser Server: test_01_01_browserServer.md
+  - Take a screenshot: test_01_02_take_a_screenshot.md
+  - Finders:
+      - Find an element: test_02_01_finders_element.md
+      - Find multiple elements: test_02_02_finders_elements.md
+      - Find an element from elements: test_02_03_finders_from_elements.md
+  - Navigating:
+      - Go to window:  test_03_02_navigators_go_to_window.md
+      - Driver assertions: test_03_01_navigators_driver_assertion.md
+  - Acting:
+      - Fill element: test_04_01_actions_fill_element.md
+      - Fill elements: test_04_02_actions_fill_elements.md
+      - Set checkbox: test_04_03_actions_set_checkbox.md
+      - Select in dropdown: test_04_04_actions_select_in_dropdown.md
+      - Click element: test_04_05_actions_click_element.md
+  - Working with alert:
+      - Intercept alerts: test_05_01_alerts_intercept_alert.md
+      - Messages in the alert: test_05_02_alerts_alert_message.md
+  - Informations:
+      - Field existance: test_06_01_informations_is_field_exist.md
+      - Field contains text: test_06_02_informations_is_field_contains_text.md
+      - Alert presence: test_06_03_informations_is_alert_present.md
+      - Element text: test_06_04_informations_element_text.md
+      - Number of windows: test_06_05_informations_how_many_windows.md
+      - Retrieve tabular: test_06_06_informations_retrieve_tabular.md
+      - Where am I: test_06_07_informations_where_am_i.md

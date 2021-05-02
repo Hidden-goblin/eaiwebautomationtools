@@ -64,14 +64,14 @@ We will fill the username field with "my name" and the email field with "my.emai
     >>> fill_elements(fields={"username":{"type":"id","value":"name"}, "email":{"type":"id","value":"email"}},data={"username":"my name","email":"my.email@test.com"})
     Traceback (most recent call last):
     ...
-    AssertionError: Driver is expected.
+    TypeError: Driver is expected
 
 ### Fields dictionary and data dictionary contain the same keys.
 
     >>> fill_elements(driver=myWebDriver.webdriver, fields={"user":{"type":"id","value":"name"}, "email":{"type":"id","value":"email"}},data={"username":"my name","email":"my.email@test.com"})
     Traceback (most recent call last):
     ...
-    AssertionError: Missing fields for the given data. Data keys 'dict_keys(['username', 'email'])'. Fields keys 'dict_keys(['user', 'email'])'
+    KeyError: 'Data keys are not included in Fields keys'
 
 ## Exceptions
 
@@ -80,7 +80,8 @@ We will fill the username field with "my name" and the email field with "my.emai
     >>> fill_elements(driver=myWebDriver.webdriver, fields={"username":{"type":"id","value":"uname"}, "email":{"type":"id","value":"email"}},data={"username":"my name","email":"my.email@test.com"})
     Traceback (most recent call last):
     ...
-    Exception: actions.fill_element raised an exception. Exception is 'Element designed by field '{'type': 'id', 'value': 'uname'}' could not be located.'
+    selenium.common.exceptions.NoSuchElementException: Message: Field '{'type': 'id', 'value': 'uname'}' could not be found for filling
+    <BLANKLINE>
 
 ### One field isn't user-editable
 

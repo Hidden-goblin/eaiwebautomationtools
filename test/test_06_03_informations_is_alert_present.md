@@ -73,7 +73,7 @@ The web driver is mandatory
     >>> is_alert_present()
     Traceback (most recent call last):
     ...
-    AssertionError: Driver is expected.
+    TypeError: Driver is expected
 
 
 ## Teardown

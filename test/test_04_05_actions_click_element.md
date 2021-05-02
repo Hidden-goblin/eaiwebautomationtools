@@ -67,7 +67,7 @@ You can even click a div
     >>> click_element(field={"type":"id", "value":"name"})
     Traceback (most recent call last):
     ...
-    AssertionError: Driver is expected.
+    TypeError: Driver is expected
 
 ### The field is not valid.
 
@@ -76,21 +76,22 @@ You can even click a div
     >>> click_element(driver=myWebDriver.webdriver, field={"type":"idl", "value":"name"})
     Traceback (most recent call last):
     ...
-    AssertionError: Field '{'type': 'idl', 'value': 'name'}' is not a valid field
+    ValueError: The field type is not one the expected: '('id', 'name', 'class_name', 'link_text', 'css', 'partial_link_text', 'xpath', 'tag_name')
 
 #### Incorrect keys value.
 
     >>> click_element(driver=myWebDriver.webdriver, field={"typ":"id", "value":"name"})
     Traceback (most recent call last):
     ...
-    AssertionError: Field '{'typ': 'id', 'value': 'name'}' is not a valid field
+    KeyError: "The field argument doesn't contains either the 'type' or 'value' key."
 
 ## Exceptions
 
     >>> click_element(driver=myWebDriver.webdriver,field={'type':'id','value':'tab'})
     Traceback (most recent call last):
     ...
-    Exception: Element designed by field '{'type': 'id', 'value': 'tab'}' could not be located.
+    selenium.common.exceptions.NoSuchElementException: Message: Element designed by field '{'type': 'id', 'value': 'tab'}' could not be located.
+    <BLANKLINE>
 
 ## Teardown
 

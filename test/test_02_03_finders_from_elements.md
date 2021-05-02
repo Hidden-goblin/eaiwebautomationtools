@@ -77,25 +77,26 @@ If the page contains only one element it will select this element. However you m
     >>> myElement = find_from_elements(field={"type":"xpath","value":"html/body/div[2]"})
     Traceback (most recent call last):
     ...
-    AssertionError: Driver is expected.
+    TypeError: Driver is expected
 
 ## The field must be a dictionary with type and value key
     
     >>> myElement = find_from_elements(driver=myWebDriver.webdriver, text="tables test page")
     Traceback (most recent call last):
     ...
-    AssertionError: Field must be a dictionary
+    TypeError: None is not a dictionary
 
     >>> myElement = find_from_elements(driver=myWebDriver.webdriver,field={"value":"tables"},text="tables test page")
     Traceback (most recent call last):
     ...
-    KeyError: KeyError("The field argument doesn't contains either the 'type' or 'value' key.")
+    KeyError: "The field argument doesn't contains either the 'type' or 'value' key."
 
     >>> myElement = find_from_elements(driver=myWebDriver.webdriver,field={"type":"id"},text="tables test page")
     Traceback (most recent call last):
     ...
-    KeyError: KeyError("The field argument doesn't contains either the 'type' or 'value' key.")
+    KeyError: "The field argument doesn't contains either the 'type' or 'value' key."
 
+    
 
 ## The text value must be a non-empty string
 
@@ -112,7 +113,7 @@ If the page contains only one element it will select this element. However you m
     >>> myElement = find_from_elements(driver=myWebDriver.webdriver,field={"type":"id","value":"tables"},text="")
     Traceback (most recent call last):
     ...
-    AttributeError: text must be non-empty
+    ValueError: text must be non-empty
 
 ## TearDown
 
