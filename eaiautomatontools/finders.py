@@ -65,7 +65,7 @@ def find_element(driver=None, field=None, web_element=None):
         else:
             element = __find_element(web_element, field)
 
-        move_to(driver, element)
+        move_to(driver, element, f"Find element: {field}")
         return element
     except NoSuchElementException as no_such_element:
         log.error("In find_element didn't find the element '{}'."
@@ -131,7 +131,7 @@ def find_from_elements(driver=None, field=None, text=None, web_element=None):
     if return_element is None:
         raise NoSuchElementException(f"Element designed by field '{field}' and text '{text}'"
                                      " could not be located.")
-    move_to(driver, return_element)
+    move_to(driver, return_element, f"Find from elements '{field}' and '{text}'")
     return return_element
 
 

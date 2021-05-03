@@ -111,7 +111,7 @@ The web driver is mandatory
     >>> alert_message()
     Traceback (most recent call last):
     ...
-    AssertionError: Driver is expected.
+    TypeError: Driver is expected
 
 
 ## Exceptions

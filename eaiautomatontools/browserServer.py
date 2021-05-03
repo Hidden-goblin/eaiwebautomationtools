@@ -327,10 +327,12 @@ class BrowserServer:
                                   visible_text=visible_text,
                                   value=value)
 
-    def move_to(self, web_element: WebElement):
+    def move_to(self, web_element: WebElement,
+                caller_message: str = "From BrowserServer instance."):
         """Bring the element into the screenplay"""
         return move_to(driver=self.webdriver,
-                       element=web_element)
+                       element=web_element,
+                       caller_message=caller_message)
 
     # TODO add unit test
     def select_in_angular_dropdown(self, root_field=None, visible_text=None):
@@ -352,6 +354,9 @@ class BrowserServer:
         return select_in_elements(driver=self.webdriver,
                                   field=field,
                                   displayed_text=displayed_text)
+
+    def execute_script(self, script: str, web_element: WebElement):
+        self.webdriver.execute_script(script, web_element)
 
     # Alerts
     def alert_message(self):

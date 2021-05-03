@@ -5,7 +5,8 @@ from logging import getLogger
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.common.exceptions import NoSuchElementException, TimeoutException
+from selenium.common.exceptions import NoSuchElementException, StaleElementReferenceException, \
+    TimeoutException
 from .drivers_tools import driver_field_validation, web_drivers_tuple, web_element_validation
 from .finders import find_element
 
@@ -28,7 +29,8 @@ def is_field_exist(driver=None, field=None, web_element=None, until=5):
         web_element_validation(web_element, log)
 
         return polling2.poll(lambda: find_element(driver, field, web_element),
-                             ignore_exceptions=(NoSuchElementException, ),
+                             ignore_exceptions=(NoSuchElementException,
+                                                StaleElementReferenceException),
                              step=0.2,
                              timeout=until)
 
@@ -119,9 +121,16 @@ def is_field_displayed(driver=None, field=None, web_element=None):
     :return: Boolean. True if element is displayed, false otherwise.
     """
     element = is_field_exist(driver=driver, field=field, web_element=web_element)
-    if element is not None:
-        return element.is_displayed()
-    else:
+    if element is None:
+        log.warning(f"Element '{field}' doesn't exist in the DOM")
+        return False
+    try:
+        polling2.poll(lambda: element.is_displayed(),
+                      step=0.2,
+                      timeout=10)
+        return True
+    except polling2.TimeoutException:
+        log.warning(f"Element '{field}' is not displayed")
         return False
 
 

@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
-import logging
+from logging import getLogger
 from selenium.common.exceptions import ElementNotSelectableException, NoAlertPresentException, \
     ElementNotInteractableException
-from .drivers_tools import web_drivers_tuple
+from .drivers_tools import driver_field_validation
+
+log = getLogger(__name__)
 
 
 def intercept_alert(driver=None, messages=None, accept=True, value=None):
@@ -25,17 +27,23 @@ def intercept_alert(driver=None, messages=None, accept=True, value=None):
     :return: 0 if success
     """
     try:
-        assert driver is not None and isinstance(driver, web_drivers_tuple()), "Driver is expected."
-        assert messages is None or isinstance(messages, list), "Messages should be a list or None"
-        assert isinstance(accept, bool), "Accept is boolean True or False"
-        assert value is None or isinstance(value, str), "Value is None or a string"
+        driver_field_validation(driver, {"type": "id", "value": "fake"}, log)
+        if not isinstance(messages, list) and messages is not None:
+            log.error("Messages should be a list or None")
+            raise TypeError("Messages should be a list or None")
+        if not isinstance(accept, bool):
+            log.error("Accept is boolean True or False")
+            raise TypeError("Accept is boolean True or False")
+        if value is not None and not isinstance(value, str):
+            log.error("Value is None or a string")
+            raise TypeError("Value is None or a string")
 
         alert_object = driver.switch_to.alert
 
         if (
-            messages is not None
-            and isinstance(messages, list)
-            and alert_object.text not in messages
+                messages is not None
+                and isinstance(messages, list)
+                and alert_object.text not in messages
         ):
             raise Exception("Message not found")
 
@@ -48,24 +56,20 @@ def intercept_alert(driver=None, messages=None, accept=True, value=None):
             alert_object.dismiss()
 
         return 0
-    except AssertionError as assertion:
-        logging.error("alerts.intercept_alert raised an assertion with following"
-                      " input driver:'{}', message:'{}' and accept:'{}'."
-                      " Assertion is '{}'".format(driver, messages, accept, assertion.args))
-        raise
+
     except ElementNotSelectableException as not_selectable:
-        logging.error("alerts.intercept_alert can't fill the alert popup with '{}'"
-                      " as there is no input field.\nGet {}".format(value, not_selectable.args))
+        log.error(f"alerts.intercept_alert can't fill the alert popup with '{value}'"
+                  f" as there is no input field.\nGet {not_selectable.args}")
         raise ElementNotSelectableException(
-            "Can't fill the alert popup with '{}' as there is no "
-            "input field.".format(value)) from None
+            f"Can't fill the alert popup with '{value}' as there is no "
+            "input field.") from None
     except ElementNotInteractableException as not_interactable:
-        logging.error(not_interactable)
+        log.error(not_interactable)
         raise ElementNotInteractableException("Cannot found an input field") from None
     except NoAlertPresentException as no_alert:
-        logging.error(
-            "alerts.intercept_alert can't interact with an alert as there is no "
-            "displayed alert.\nGet {}".format(no_alert.args))
+        log.error(
+            f"alerts.intercept_alert can't interact with an alert as there is no "
+            f"displayed alert.\nGet {no_alert.args}")
         raise NoAlertPresentException("Can't interact with an alert as there is no "
                                       "displayed alert") from None
 
@@ -79,16 +83,11 @@ def alert_message(driver=None):
     :return: 0 if success
     """
     try:
-        assert driver is not None and isinstance(driver, web_drivers_tuple()), "Driver is expected."
+        driver_field_validation(driver, {"type": "id", "value": "fake"}, log)
         alert_object = driver.switch_to.alert
-
         return alert_object.text
-    except AssertionError as assertion:
-        logging.error("alerts.alert_message raised an assertion with following input"
-                      " driver:'{}'. Assertion is '{}'".format(driver, assertion.args))
-        raise
     except NoAlertPresentException as no_alert:
-        logging.error("alerts.intercept_alert can't interact with an alert as there"
-                      " is no displayed alert.\nGet {}".format(no_alert.args))
+        log.error(f"alerts.intercept_alert can't interact with an alert as there"
+                  f" is no displayed alert.\nGet {no_alert.args}")
         raise NoAlertPresentException("Can't interact with an alert as there is no"
                                       " displayed alert") from None
