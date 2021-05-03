@@ -235,28 +235,28 @@ The page displays no message
     >>> intercept_alert(value="My prompt is rich.", accept=False)
     Traceback (most recent call last):
     ...
-    AssertionError: Driver is expected.
+    TypeError: Driver is expected
 
 ### The messages must be a string list
 
     >>> intercept_alert(driver=myWebDriver.webdriver, messages="toto")
     Traceback (most recent call last):
     ...
-    AssertionError: Messages should be a list or None
+    TypeError: Messages should be a list or None
 
 ### The accept is a boolean
 
     >>> intercept_alert(driver=myWebDriver.webdriver, accept="True")
     Traceback (most recent call last):
     ...
-    AssertionError: Accept is boolean True or False
+    TypeError: Accept is boolean True or False
 
 ### Value is a string
 
     >>> intercept_alert(driver=myWebDriver.webdriver, value=True)
     Traceback (most recent call last):
     ...
-    AssertionError: Value is None or a string
+    TypeError: Value is None or a string
 
 ## Exceptions
 

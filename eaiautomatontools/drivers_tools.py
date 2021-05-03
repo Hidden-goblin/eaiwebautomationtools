@@ -76,13 +76,13 @@ def fullpage_screenshot(driver, file):
     return True
 
 
-def move_to(driver=None, element: WebElement = None):
+def move_to(driver=None, element: WebElement = None, caller_message: str = ''):
     if driver is None or not isinstance(driver, web_drivers_tuple()):
         log.error("Driver is expected")
-        raise AttributeError("Driver is expected")
+        raise TypeError("Driver is expected")
     if element is None or not isinstance(element, WebElement):
         log.error("Element is expected")
-        raise AttributeError("Element is expected")
+        raise TypeError("Element is expected")
     try:
         if 'firefox' in driver.capabilities['browserName']:
             x = element.location['x']
@@ -98,9 +98,10 @@ def move_to(driver=None, element: WebElement = None):
         actions.move_to_element(element)
         actions.perform()
     except Exception as exception:
-        log.warning(f"Cannot move to with chain actions. Get:\n {exception.args[0]}")
+        log.warning(f"'{caller_message}'\nCannot move to with chain actions."
+                    f" Get:\n {exception.args[0]}")
         driver.execute_script("arguments[0].scrollIntoView();", element)
-        raise Exception(exception)
+        raise Exception(f"'{caller_message}'\n{exception.args[0]}")
 
 
 def __field_validation(field=None, logger=None):

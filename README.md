@@ -3,10 +3,20 @@ Automaton Tools module
 
 The automaton tools module provide an abstraction of the selenium web driver through a "BrowserServer" object.
 
+Note on documentation
+=====================
+
+The documentation is build upon the doctest's files. It includes some weird sections such as "Teardown" 
+section: Don't be afraid is testing part ;)
+
+Documentation is on [ReadTheDocs](https://eaiwebautomationtools.readthedocs.io)
+
 System requirements
 ===================
 
 This module has been developed with Python 3.7 and uses selenium version 3.14.
+
+All code is accessible on [GitHub](https://github.com/Hidden-goblin/eaiwebautomationtools)
 
 BrowserServer object
 =====================
@@ -137,6 +147,12 @@ To Do
 Release Notes
 =============
 
+- version 1.0.7:
+    - add caller_message to move_to method in order to track down issue in the logs
+    - add execute_script method to BrowserServer
+    - is_displayed polls every 0.2s for 10s in order to check if field is displayed
+    - is_field_exist polls even with StaleElementReferenceException
+    - use polling2 instead of webdriver wait where applicable
 - version 1.0.6:
     - new test server: now using flask as a test server
     - use mkdocs and the doctest test repository in order to build the documentation

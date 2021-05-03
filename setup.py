@@ -6,11 +6,11 @@ with open("README.md", "r") as file:
 
 setup(
     name="eaiautomatontools",
-    version="1.0.6",
+    version="1.0.7",
     description="UI utilities in order to abstract selenium commands",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/Hidden-goblin/eaiwebautomationtools",
+    url="https://eaiwebautomationtools.readthedocs.io/",
     classifiers=[  # Optional
         # How mature is this project? Common values are
         #   3 - Alpha
