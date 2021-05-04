@@ -269,9 +269,15 @@ class BrowserServer:
         return go_to_window(driver=self.webdriver, handle=handle, title=title)
 
     # Finders
-    def find_element(self, field: dict = None, web_element: WebElement = None):
+    def find_element(self,
+                     field: dict = None,
+                     web_element: WebElement = None,
+                     avoid_move_to: bool = False):
         """Find element using the current webdriver or the provided WebElement"""
-        return find_element(driver=self.webdriver, field=field, web_element=web_element)
+        return find_element(driver=self.webdriver,
+                            field=field,
+                            web_element=web_element,
+                            avoid_move_to=avoid_move_to)
 
     def find_elements(self, field: dict = None, web_element: WebElement = None):
         """Find elements using the current webdriver or the provided WebElement"""

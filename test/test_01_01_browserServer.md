@@ -76,12 +76,24 @@ When closing you discard the web driver. However you can re-serve a new driver a
     >>> type(mydriver)
     <class 'selenium.webdriver.chrome.webdriver.WebDriver'>
 
-Go to an URL
-----------------------------
+## Go to an URL
+
 From the browserServer object you can do one basic thing navigate to a specific URL.
 
     >>> myBrowser.go_to(url="http://google.com")
     0
+
+## Check if the current instance is open
+
+    >>> myBrowser.is_launched
+    True
+
+
+## Check the current url
+    
+    >>> myBrowser.where_am_i()
+    'https://www.google.com/?gws_rd=ssl'
+
 
 Teardown
 ------------------------------

@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 import logging
+# from typing import Union
 
 from deprecated.classic import deprecated
 
-from .drivers_tools import driver_field_validation, move_to, web_drivers_tuple, web_element_validation
+from .drivers_tools import driver_field_validation, move_to, web_element_validation
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.common.action_chains import ActionChains
@@ -39,7 +40,10 @@ def __find_elements(web_element, field: dict):
     return switcher[field["type"]](field["value"])
 
 
-def find_element(driver=None, field=None, web_element=None):
+def find_element(driver=None,
+                 field: dict = None,
+                 web_element: WebElement = None,
+                 avoid_move_to: bool = False) -> WebElement:
     """
     Look up for the field described as a dictionary {"type": string, "value":}.
     Example: {"type": "id", "value": "frmCentreNumber"}
@@ -47,6 +51,7 @@ def find_element(driver=None, field=None, web_element=None):
     :param driver: a selenium web driver
     :param field: a dictionary
     :param web_element: a web_element to search from
+    :param avoid_move_to:
     :raise AssertionError: if driver is not a proper web driver instance or
             the field is not a dictionary
     :raise KeyError: If the field variable doesn't contain the expected keys i.e. type and value
@@ -57,15 +62,19 @@ def find_element(driver=None, field=None, web_element=None):
         driver_field_validation(driver, field, log)
         web_element_validation(web_element, log)
 
-        if "text" in field.keys():
-            return find_from_elements(driver=driver, field=field, text=field['text'])
+        if "text" in field:
+            return find_from_elements(driver=driver,
+                                      field=field,
+                                      text=field['text'],
+                                      web_element=web_element)
 
         if web_element is None:
             element = __find_element(driver, field)
         else:
             element = __find_element(web_element, field)
 
-        move_to(driver, element, f"Find element: {field}")
+        if not avoid_move_to:
+            move_to(driver, element, f"Find element: {field}")
         return element
     except NoSuchElementException as no_such_element:
         log.error("In find_element didn't find the element '{}'."
@@ -103,8 +112,8 @@ def find_from_elements(driver=None, field=None, text=None, web_element=None):
     :param driver: a selenium web driver
     :param field: a dictionary
     :param text: a string
-    :raise AssertionError: from the eaifinders.find_elements method
-    :raise KeyError: from the eaifinders.find_elements method
+    :raise AssertionError: from the finders.find_elements method
+    :raise KeyError: from the finders.find_elements method
     :raise NoSuchElementException: when no element is found
     :return: a selenium web element
     """
