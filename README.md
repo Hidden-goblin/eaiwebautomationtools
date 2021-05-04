@@ -31,23 +31,6 @@ The BrowserServer is packaged with the webdriver-manager. You can require:
 - safari (it's not managed by webdriver-manager: you have to provide the path to the webdriver)
 
 
-Mapping update (Deprecated)
---------------
-
-You can update the mapping setting by using "update\_webdriver\_mapping(new\_mapping)" method.
-
-The mapping indicate where the webdriver executable could be found.
-
-{\<browser\>:{\<version\>:\<full path location\>,...}}
-
-**Please mind** the browser list is "ie", "firefox","chrome", "edge" and "safari" in lower case, and the versions are "32" or "64" only.
-
-Choosing a webdriver (Deprecated)
---------------------
-
-Before using the BrowserServer, you must select a webdriver defined in the mapping by using  
-"set\_browser\_type(name, version)" or "set\_browser\_type(browser\_type)" where browser\_type is {"name":\<browser name\>, "version":\<version\>} dictionary.
-
 Serve the webdriver
 -------------------
 
@@ -72,6 +55,8 @@ The **type** is one of the following:
 -   partial\_link\_text: the link partial text,
 -   tag\_name: the element tag name
 -   xpath: the element xpath
+
+
 
 The **value** contains the actual value for the **type**. For example an element with the "id" type must have  
 the id's value to be correctly defined. In the same way an element with the "tag_name" type and a value "div" may return all div on the web page.
@@ -147,6 +132,9 @@ To Do
 Release Notes
 =============
 
+- version 1.0.8:
+    - add avoid_move_to option on find_element in order to retrieve an element without moving to it
+    - add minor tests
 - version 1.0.7:
     - add caller_message to move_to method in order to track down issue in the logs
     - add execute_script method to BrowserServer

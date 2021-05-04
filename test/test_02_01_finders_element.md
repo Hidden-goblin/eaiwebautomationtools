@@ -229,10 +229,12 @@ Another example
 * tag_name: when you want to retrieve the field by its tag name
 
 
+
     >>> myElement = find_element(driver=myWebDriver.webdriver, field={"type":"test", "value": "test"})
     Traceback (most recent call last):
     ...
     ValueError: The field type is not one the expected: '('id', 'name', 'class_name', 'link_text', 'css', 'partial_link_text', 'xpath', 'tag_name')
+
     
 TearDown
 -------------------------
