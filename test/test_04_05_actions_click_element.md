@@ -88,10 +88,7 @@ You can even click a div
 ## Exceptions
 
     >>> click_element(driver=myWebDriver.webdriver,field={'type':'id','value':'tab'})
-    Traceback (most recent call last):
-    ...
-    selenium.common.exceptions.NoSuchElementException: Message: Element designed by field '{'type': 'id', 'value': 'tab'}' could not be located.
-    <BLANKLINE>
+    1
 
 ## Teardown
 

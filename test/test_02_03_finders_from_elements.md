@@ -67,10 +67,9 @@ If the page contains only one element it will select this element. However you m
 ## Not found element
 
     >>> myElement = find_from_elements(driver=myWebDriver.webdriver,field={"type":"tag_name","value":"a"},text="page")
-    Traceback (most recent call last):
-    ...
-    selenium.common.exceptions.NoSuchElementException: Message: Element designed by field '{'type': 'tag_name', 'value': 'a'}' and text 'page' could not be located.
-    <BLANKLINE>
+    
+    >>> type(myElement)
+    <class 'NoneType'>
 
 ## The web driver is mandatory
 

@@ -89,17 +89,12 @@ Import the set_checkbox tool
 ### The element can't be found
 
     >>> set_checkbox(driver=myWebDriver.webdriver, field={"type":"id","value":"checkbox"}, is_checked=True)
-    Traceback (most recent call last):
-    ...
-    selenium.common.exceptions.NoSuchElementException: Message: Element designed by field '{'type': 'id', 'value': 'checkbox'}' could not be located.
-    <BLANKLINE>
+    1
 
 ### The element can't be checked
 
     >>> set_checkbox(driver=myWebDriver.webdriver, field={"type":"id","value":"name"}, is_checked=True)
-    Traceback (most recent call last):
-    ...
-    Exception: The element '{'type': 'id', 'value': 'name'}' can't be set to the expected status 'True'.
+    1
 
 Beware! Setting to False a non checkable element cast no error
 

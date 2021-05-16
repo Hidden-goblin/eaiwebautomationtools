@@ -73,10 +73,9 @@ And it's case-insensitive
 
 ### Table not found
     >>> tab = retrieve_tabular(myWebDriver.webdriver, {"type": "xpath", "value": "/html/body/table[7]"})
-    Traceback (most recent call last):
-    ...
-    selenium.common.exceptions.NoSuchElementException: Message: Element designed by field '{'type': 'xpath', 'value': '/html/body/table[7]'}' could not be located.
-    <BLANKLINE>
+    
+    >>> type(tab)
+    <class 'NoneType'>
 
 ## Teardown
 

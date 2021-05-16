@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import logging
-# from typing import Union
+from typing import List, Union
 
 from deprecated.classic import deprecated
 
@@ -43,7 +43,7 @@ def __find_elements(web_element, field: dict):
 def find_element(driver=None,
                  field: dict = None,
                  web_element: WebElement = None,
-                 avoid_move_to: bool = False) -> WebElement:
+                 avoid_move_to: bool = False) -> Union[WebElement, None]:
     """
     Look up for the field described as a dictionary {"type": string, "value":}.
     Example: {"type": "id", "value": "frmCentreNumber"}
@@ -51,7 +51,7 @@ def find_element(driver=None,
     :param driver: a selenium web driver
     :param field: a dictionary
     :param web_element: a web_element to search from
-    :param avoid_move_to:
+    :param avoid_move_to: avoid to move to the found element
     :raise AssertionError: if driver is not a proper web driver instance or
             the field is not a dictionary
     :raise KeyError: If the field variable doesn't contain the expected keys i.e. type and value
@@ -77,13 +77,12 @@ def find_element(driver=None,
             move_to(driver, element, f"Find element: {field}")
         return element
     except NoSuchElementException as no_such_element:
-        log.error("In find_element didn't find the element '{}'."
-                  " Exception is '{}'".format(field, no_such_element.args))
-        raise NoSuchElementException(f"Element designed by field '{field}'"
-                                     " could not be located.") from None
+        log.warning("In find_element didn't find the element '{}'."
+                    " Exception is '{}'".format(field, no_such_element.args))
+        return None
 
 
-def find_elements(driver=None, field=None, web_element=None):
+def find_elements(driver=None, field=None, web_element=None) -> List[WebElement]:
     """
     Look up for the field described as a dictionary {"type": string, "value":}.
     Example: {"type": "id", "value": "frmCentreNumber"}
@@ -105,13 +104,18 @@ def find_elements(driver=None, field=None, web_element=None):
         return __find_elements(driver, field)
 
 
-def find_from_elements(driver=None, field=None, text=None, web_element=None):
+def find_from_elements(driver=None,
+                       field=None,
+                       text=None,
+                       web_element=None,
+                       avoid_move_to: bool = False) -> Union[WebElement, None]:
     """
     Try to locate an element using his text
-    :param web_element:
     :param driver: a selenium web driver
     :param field: a dictionary
     :param text: a string
+    :param web_element: a WebElement to search from
+    :param avoid_move_to: avoid to move to the found element
     :raise AssertionError: from the finders.find_elements method
     :raise KeyError: from the finders.find_elements method
     :raise NoSuchElementException: when no element is found
@@ -137,10 +141,12 @@ def find_from_elements(driver=None, field=None, text=None, web_element=None):
             return_element = element
             break
 
-    if return_element is None:
-        raise NoSuchElementException(f"Element designed by field '{field}' and text '{text}'"
-                                     " could not be located.")
-    move_to(driver, return_element, f"Find from elements '{field}' and '{text}'")
+    if return_element is not None:
+        if not avoid_move_to:
+            move_to(driver, return_element, f"Find from elements '{field}' and '{text}'")
+    else:
+        log.warning(f"Element designed by field '{field}' and text '{text}'"
+                    " could not be located.")
     return return_element
 
 
@@ -167,7 +173,7 @@ def find_sub_element_from_element(web_element=None, field=None):
             "partial_link_text": web_element.find_element_by_partial_link_text,
             "tag_name": web_element.find_element_by_tag_name,
             "xpath": web_element.find_element_by_xpath
-            }
+        }
 
         element = switcher[field["type"]](field["value"])
         actions = ActionChains(web_element.parent)

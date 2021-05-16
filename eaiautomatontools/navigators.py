@@ -1,14 +1,17 @@
 # -*- coding: utf-8 -*-
+from logging import getLogger
 from .finders import find_element
 from .drivers_tools import web_drivers_tuple
 """
-The eainavigators tool box purpose is to provide some limited but heavy used methods
+The navigators tool box purpose is to provide some limited but heavy used methods
 in order to browse to URL and navigate from browser tabs or windows.
 
 The behaviour of these methods are known so that it will ease the debugging.
 """
 
 # Todo: Add a logger so that it will be easy to search for issues.
+
+log = getLogger(__name__)
 
 
 def go_to_url(driver=None, url=None):
