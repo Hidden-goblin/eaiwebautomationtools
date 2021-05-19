@@ -18,6 +18,7 @@ from webdriver_manager.chrome import ChromeDriverManager
 from webdriver_manager.firefox import GeckoDriverManager
 from webdriver_manager.microsoft import EdgeChromiumDriverManager
 from webdriver_manager.opera import OperaDriverManager
+from webdriver_manager.utils import ChromeType
 # Self 
 from .navigators import go_to_url, enter_frame, go_to_window
 from .finders import find_element, find_elements, find_from_elements, \
@@ -46,6 +47,8 @@ class BrowserServer:
     __OPTIONS_SWITCHER = {
         "chrome": ChrOptions,
         "headless-chrome": ChrOptions,
+        "chromium": ChrOptions,
+        "headless-chromium": ChrOptions,
         "firefox": FfOptions,
         "opera": OpeOptions,
         "edge": EdgOptions
@@ -54,6 +57,8 @@ class BrowserServer:
     __DRIVER_MANAGER = {
             "chrome": ChromeDriverManager,
             "headless-chrome": ChromeDriverManager,
+            "chromium": ChromeDriverManager,
+            "headless-chromium": ChromeDriverManager,
             "firefox": GeckoDriverManager,
             "edge": EdgeChromiumDriverManager,
             "opera": OperaDriverManager
@@ -62,6 +67,8 @@ class BrowserServer:
     __WEB_DRIVERS = {
             "chrome": webdriver.Chrome,
             "headless-chrome": webdriver.Chrome,
+            "chromium": webdriver.Chrome,
+            "headless-chromium": webdriver.Chrome,
             "firefox": webdriver.Firefox,
             "edge": webdriver.Edge,
             "safari": webdriver.Safari,
@@ -72,7 +79,8 @@ class BrowserServer:
         # Definition of private attributes and references
         # All strings allowed for the browser name and version
         self.__authorized_name_version = ("chrome", "firefox", "opera",
-                                          "edge", "safari", "headless-chrome")
+                                          "edge", "safari", "headless-chrome",
+                                          "chromium", "headless-chromium")
         # Browser window's status
         self.__launched = False
 
@@ -161,21 +169,7 @@ class BrowserServer:
         if self.browser_name == "safari":
             self.__web_driver = BrowserServer.__WEB_DRIVERS[self.browser_name](
                 executable_path=self.driver_path)
-        elif self.browser_name == "chrome":
-            # Hack https://stackoverflow.com/questions/64927909/
-            # failed-to-read-descriptor-from-node-connection-a-device-attached-to-the-system
-            if self.__driver_path is None:
-                self.__driver_path = BrowserServer.__DRIVER_MANAGER[self.browser_name]().install() 
-            option = BrowserServer.__OPTIONS_SWITCHER[self.browser_name]()
-            option.add_experimental_option('excludeSwitches', ['enable-logging'])
-            if self.driver_options:
-                for opt in self.driver_options:
-                    option.add_argument(opt)
-            self.__web_driver = BrowserServer.__WEB_DRIVERS[self.browser_name](
-                    executable_path=self.__driver_path,
-                    options=option
-                )
-        elif self.browser_name == "headless-chrome":
+        elif "headless-chrom" in self.browser_name:
             option = BrowserServer.__OPTIONS_SWITCHER[self.browser_name]()
             option.add_experimental_option('excludeSwitches', ['enable-logging'])
             if self.driver_options:
@@ -183,7 +177,29 @@ class BrowserServer:
                     option.add_argument(opt)
             option.headless = True
             if self.__driver_path is None:
-                self.__driver_path = BrowserServer.__DRIVER_MANAGER[self.browser_name]().install()
+                if "ium" in self.browser_name:
+                    self.__driver_path = BrowserServer.__DRIVER_MANAGER[self.browser_name](
+                        chrome_type=ChromeType.CHROMIUM).install()
+                else:
+                    self.__driver_path = BrowserServer.__DRIVER_MANAGER[self.browser_name]().install()
+            self.__web_driver = BrowserServer.__WEB_DRIVERS[self.browser_name](
+                    executable_path=self.__driver_path,
+                    options=option
+                )
+        elif "chrom" in self.browser_name:
+            # Hack https://stackoverflow.com/questions/64927909/
+            # failed-to-read-descriptor-from-node-connection-a-device-attached-to-the-system
+            if self.__driver_path is None:
+                if "ium" in self.browser_name:
+                    self.__driver_path = BrowserServer.__DRIVER_MANAGER[self.browser_name](
+                        chrome_type=ChromeType.CHROMIUM).install()
+                else:
+                    self.__driver_path = BrowserServer.__DRIVER_MANAGER[self.browser_name]().install()
+            option = BrowserServer.__OPTIONS_SWITCHER[self.browser_name]()
+            option.add_experimental_option('excludeSwitches', ['enable-logging'])
+            if self.driver_options:
+                for opt in self.driver_options:
+                    option.add_argument(opt)
             self.__web_driver = BrowserServer.__WEB_DRIVERS[self.browser_name](
                     executable_path=self.__driver_path,
                     options=option
