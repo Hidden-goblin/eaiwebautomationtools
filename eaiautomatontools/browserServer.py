@@ -393,11 +393,12 @@ class BrowserServer:
     def is_alert_present(self, until=5):
         return is_alert_present(driver=self.webdriver, until=until)
 
-    def is_field_exist(self, field=None, web_element=None, until=5):
+    def is_field_exist(self, field=None, web_element=None, until=5, avoid_move_to=True):
         return is_field_exist(driver=self.webdriver,
                               field=field,
                               web_element=web_element,
-                              until=until)
+                              until=until,
+                              avoid_move_to=avoid_move_to)
 
     def is_field_contains_text(self, field=None, web_element=None, text=None):
         return is_field_contains_text(driver=self.webdriver,
@@ -410,8 +411,11 @@ class BrowserServer:
                             field=field,
                             web_element=web_element)
 
-    def is_field_displayed(self, field=None, web_element=None):
-        return is_field_displayed(driver=self.webdriver, field=field, web_element=web_element)
+    def is_field_displayed(self, field=None, web_element=None, avoid_move_to=True):
+        return is_field_displayed(driver=self.webdriver,
+                                  field=field,
+                                  web_element=web_element,
+                                  avoid_move_to=avoid_move_to)
 
     def is_field_enabled(self, field=None, web_element=None, attribute=None):
         return is_field_enabled(driver=self.webdriver, field=field, web_element=web_element,
