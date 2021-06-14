@@ -95,18 +95,12 @@ Import the set_checkbox tool
 ### The element can't be found
 
     >>> select_in_dropdown(driver=myWebDriver.webdriver, field={'type':'id','value':'lander'},value="Meath")
-    Traceback (most recent call last):
-     ...
-    selenium.common.exceptions.NoSuchElementException: Message: Element designed by field '{'type': 'id', 'value': 'lander'}' could not be located.
-    <BLANKLINE>
+    1
 
 ### The option can't be located
 
     >>> select_in_dropdown(driver=myWebDriver.webdriver, field={'type':'id','value':'county'},value="toto")
-    Traceback (most recent call last):
-     ...
-    selenium.common.exceptions.NoSuchElementException: Message: Cannot locate option with value: toto
-    <BLANKLINE>
+    1
 
 ### Not a drop down
 

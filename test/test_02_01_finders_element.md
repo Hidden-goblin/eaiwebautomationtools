@@ -148,46 +148,39 @@ Another example
     0
 
     >>> myElement = find_element(driver=myWebDriver.webdriver, field={"type":"id","value":"toto"})
-    Traceback (most recent call last):
-    ...
-    selenium.common.exceptions.NoSuchElementException: Message: Element designed by field '{'type': 'id', 'value': 'toto'}' could not be located.
-    <BLANKLINE>
+    
+    >>> type(myElement)
+    <class 'NoneType'>
 
     >>> myElement = find_element(driver=myWebDriver.webdriver, field={"type":"name","value":"toto-div"})
-    Traceback (most recent call last):
-    ...
-    selenium.common.exceptions.NoSuchElementException: Message: Element designed by field '{'type': 'name', 'value': 'toto-div'}' could not be located.
-    <BLANKLINE>
+    
+    >>> type(myElement)
+    <class 'NoneType'>
 
     >>> myElement = find_element(driver=myWebDriver.webdriver, field={"type":"tag_name","value":"table"})
-    Traceback (most recent call last):
-    ...
-    selenium.common.exceptions.NoSuchElementException: Message: Element designed by field '{'type': 'tag_name', 'value': 'table'}' could not be located.
-    <BLANKLINE>
+    
+    >>> type(myElement)
+    <class 'NoneType'>
 
     >>> myElement = find_element(driver=myWebDriver.webdriver, field={"type":"link_text","value":"toto page"})
-    Traceback (most recent call last):
-    ...
-    selenium.common.exceptions.NoSuchElementException: Message: Element designed by field '{'type': 'link_text', 'value': 'toto page'}' could not be located.
-    <BLANKLINE>
+    
+    >>> type(myElement)
+    <class 'NoneType'>
 
     >>> myElement = find_element(driver=myWebDriver.webdriver, field={"type":"partial_link_text","value":"toto"})
-    Traceback (most recent call last):
-    ...
-    selenium.common.exceptions.NoSuchElementException: Message: Element designed by field '{'type': 'partial_link_text', 'value': 'toto'}' could not be located.
-    <BLANKLINE>
+    
+    >>> type(myElement)
+    <class 'NoneType'>
 
     >>> myElement = find_element(driver=myWebDriver.webdriver, field={"type":"css","value":"input"})
-    Traceback (most recent call last):
-    ...
-    selenium.common.exceptions.NoSuchElementException: Message: Element designed by field '{'type': 'css', 'value': 'input'}' could not be located.
-    <BLANKLINE>
+    
+    >>> type(myElement)
+    <class 'NoneType'>
 
     >>> myElement = find_element(driver=myWebDriver.webdriver, field={"type":"xpath","value":"html/body/span"})
-    Traceback (most recent call last):
-    ...
-    selenium.common.exceptions.NoSuchElementException: Message: Element designed by field '{'type': 'xpath', 'value': 'html/body/span'}' could not be located.
-    <BLANKLINE>
+    
+    >>> type(myElement)
+    <class 'NoneType'>
 
 ## The web driver is mandatory
 

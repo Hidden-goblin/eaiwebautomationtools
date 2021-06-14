@@ -78,18 +78,12 @@ We will fill the username field with "my name" and the email field with "my.emai
 ### One field doesn't exist on the UI
 
     >>> fill_elements(driver=myWebDriver.webdriver, fields={"username":{"type":"id","value":"uname"}, "email":{"type":"id","value":"email"}},data={"username":"my name","email":"my.email@test.com"})
-    Traceback (most recent call last):
-    ...
-    selenium.common.exceptions.NoSuchElementException: Message: Field '{'type': 'id', 'value': 'uname'}' could not be found for filling
-    <BLANKLINE>
+    1
 
 ### One field isn't user-editable
 
     >>> fill_elements(driver=myWebDriver.webdriver, fields={"username":{"type":"id","value":"lab-name"}, "email":{"type":"id","value":"email"}},data={"username":"my name","email":"my.email@test.com"})
-    Traceback (most recent call last):
-    ...
-    selenium.common.exceptions.InvalidElementStateException: Message: Element '{'type': 'id', 'value': 'lab-name'}' must be user-editable
-    <BLANKLINE>
+    1
 
 ## Teardown
 

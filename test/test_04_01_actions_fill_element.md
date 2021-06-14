@@ -110,18 +110,12 @@ Check the textfield has been updated.
 The element is not user editable
 
     >>> fill_element(driver=myWebDriver.webdriver, field={"type":"id", "value":"lab-name"},value="my name")
-    Traceback (most recent call last):
-    ...
-    selenium.common.exceptions.InvalidElementStateException: Message: Element '{'type': 'id', 'value': 'lab-name'}' must be user-editable
-    <BLANKLINE>
+    1
 
 The element can't be found
 
     >>> fill_element(driver=myWebDriver.webdriver, field={"type":"id", "value":"lab-nam"},value="my name")
-    Traceback (most recent call last):
-    ...
-    selenium.common.exceptions.NoSuchElementException: Message: Field '{'type': 'id', 'value': 'lab-nam'}' could not be found for filling
-    <BLANKLINE>
+    1
 
 ## Teardown
 ------------------------------

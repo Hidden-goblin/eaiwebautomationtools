@@ -1,13 +1,15 @@
 # -*- coding: utf-8 -*-
 import polling2
-from polling2 import PollingException
+
+from typing import Union
 from logging import getLogger
-from selenium.webdriver.common.by import By
+from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import ElementNotInteractableException, NoSuchElementException, \
     StaleElementReferenceException, \
     TimeoutException
+
 from .drivers_tools import driver_field_validation, web_drivers_tuple, web_element_validation
 from .finders import find_element
 
@@ -15,9 +17,14 @@ from .finders import find_element
 log = getLogger(__name__)
 
 
-def is_field_exist(driver=None, field=None, web_element=None, until=5):
+def is_field_exist(driver=None,
+                   field=None,
+                   web_element=None,
+                   until=5,
+                   avoid_move_to=False) -> Union[WebElement, None]:
     """
     Test if the field given as a {"type":"id","value":"toto"} dictionary exists.
+    :param avoid_move_to:
     :param driver: a selenium web driver
     :param field: a dictionary representing the web element to search
     :param web_element: a web_element to search from
@@ -29,22 +36,27 @@ def is_field_exist(driver=None, field=None, web_element=None, until=5):
         driver_field_validation(driver, field, log)
         web_element_validation(web_element, log)
 
-        return polling2.poll(lambda: find_element(driver, field, web_element, True),
+        return polling2.poll(lambda: find_element(driver, field, web_element, avoid_move_to),
                              ignore_exceptions=(NoSuchElementException,
                                                 StaleElementReferenceException),
                              step=0.2,
                              timeout=until)
 
     except polling2.TimeoutException:
-        log.warning(f"information.is_field_exist raised a TimeoutException for "
+        log.info(f"information.is_field_exist raised a TimeoutException for "
                     f"the following field '{field}'")
         return None
 
 
-def is_field_contains_text(driver=None, field=None, web_element=None, text=None):
+def is_field_contains_text(driver=None,
+                           field=None,
+                           web_element=None,
+                           text=None,
+                           avoid_move_to=False) -> bool:
     """
     Check if the given field contains the text either as a DOM text or value text.
     {"type":"id","value":"toto"}
+    :param avoid_move_to:
     :param driver: a selenium web driver
     :param field: a dictionary representing the web element to search
     :param web_element: a web_element to search from
@@ -52,7 +64,13 @@ def is_field_contains_text(driver=None, field=None, web_element=None, text=None)
     :raise AssertionError: driver isn't of the expected type
     :return: True if the field contains the text, False otherwise
     """
-    element = is_field_exist(driver=driver, field=field, web_element=web_element)
+    element = is_field_exist(driver=driver,
+                             field=field,
+                             web_element=web_element,
+                             avoid_move_to=avoid_move_to)
+    if element is None:
+        log.warning(f"Cannot find the element {field} to check the text from")
+        return False
     return (element.text is not None and text in element.text) or (
             element.get_attribute("value") is not None
             and text in element.get_attribute("value"))
@@ -73,9 +91,13 @@ def is_alert_present(driver=None, until=5):
         return False
 
 
-def element_text(driver=None, field=None, web_element=None):
+def element_text(driver=None,
+                 field=None,
+                 web_element=None,
+                 avoid_move_to=False) -> Union[str, None]:
     """
     Return the text of the element
+    :param avoid_move_to:
     :param driver: a selenium web driver
     :param field: a dictionary corresponding to the field to retrieve the text
     :param web_element: a webElement to search the field from
@@ -84,7 +106,13 @@ def element_text(driver=None, field=None, web_element=None):
     :raise Exception: if text and value are defined but not identical
     :return: the element text or value, empty if no text or value
     """
-    element = find_element(driver=driver, field=field, web_element=web_element)
+    element = find_element(driver=driver,
+                           field=field,
+                           web_element=web_element,
+                           avoid_move_to=avoid_move_to)
+    if element is None:
+        log.warning(f"Cannot find the element {field} to retrieve the text from")
+        return None
     element_text_ = element.text
     element_value = element.get_attribute("value")
 
@@ -113,17 +141,21 @@ def how_many_windows(driver=None):
     return len(driver.window_handles)
 
 
-def is_field_displayed(driver=None, field=None, web_element=None):
+def is_field_displayed(driver=None, field=None, web_element=None, avoid_move_to=False):
     """
     Check if the element is displayed. You may not interact with it.
+    :param avoid_move_to:
     :param driver: a selenium web driver
     :param field: a dictionary corresponding to the field to retrieve the text
     :param web_element: a webElement to search the field from
     :return: Boolean. True if element is displayed, false otherwise.
     """
-    element = is_field_exist(driver=driver, field=field, web_element=web_element)
+    element = is_field_exist(driver=driver,
+                             field=field,
+                             web_element=web_element,
+                             avoid_move_to=avoid_move_to)
     if element is None:
-        log.warning(f"Element '{field}' doesn't exist in the DOM")
+        log.info(f"Element '{field}' doesn't exist in the DOM")
         return False
     try:
         polling2.poll(lambda: element.is_displayed(),
@@ -135,13 +167,18 @@ def is_field_displayed(driver=None, field=None, web_element=None):
                       )
         return True
     except polling2.TimeoutException:
-        log.warning(f"Element '{field}' is not displayed")
+        log.info(f"Element '{field}' is not displayed")
         return False
 
 
-def is_field_enabled(driver=None, field=None, web_element=None, attribute=None):
+def is_field_enabled(driver=None,
+                     field=None,
+                     web_element=None,
+                     attribute=None,
+                     avoid_move_to=False) -> bool:
     """
     Check if the element is enabled.
+    :param avoid_move_to:
     :param driver: a selenium web driver
     :param field: a dictionary representing the web element to search
     :param web_element: a web_element to search from
@@ -149,7 +186,10 @@ def is_field_enabled(driver=None, field=None, web_element=None, attribute=None):
     :return: Boolean. True if element is enabled, false otherwise for non attribute.
             Attribute string otherwise
     """
-    element = is_field_exist(driver=driver, field=field, web_element=web_element)
+    element = is_field_exist(driver=driver,
+                             field=field,
+                             web_element=web_element,
+                             avoid_move_to=avoid_move_to)
     if element is not None:
         if attribute is not None:
             return element.get_attribute(attribute)
@@ -171,17 +211,26 @@ def where_am_i(driver=None):
     return driver.current_url
 
 
-def is_checkbox_checked(driver=None, field=None, web_element=None, is_angular=False):
+def is_checkbox_checked(driver=None,
+                        field=None,
+                        web_element=None,
+                        is_angular=False,
+                        avoid_move_to=False):
     """
     Return the checkbox status
+    :param avoid_move_to:
     :param driver: a selenium web driver
     :param field: a dictionary representing the web element to search
     :param web_element: a web_element to search from
     :param is_angular: boolean
     :return: boolean
     """
-    element = is_field_exist(driver=driver, field=field, web_element=web_element)
-
+    element = is_field_exist(driver=driver,
+                             field=field,
+                             web_element=web_element,
+                             avoid_move_to=avoid_move_to)
+    if element is None:
+        log.warning(f"Element {field} not found")
     if is_angular:
         return bool(element.get_attribute("ng-reflect-checked"))
     else:
@@ -189,7 +238,7 @@ def is_checkbox_checked(driver=None, field=None, web_element=None, is_angular=Fa
 
 
 def retrieve_tabular(driver=None,
-                     field=None, web_element=None, row_and_col=("tr", "td", "th")) -> list:
+                     field=None, web_element=None, row_and_col=("tr", "td", "th")) -> Union[list, None]:
     """
     Return the tabular as a list of elements.
     Elements are either lists or dictionaries depending on the presence of headers
@@ -202,6 +251,9 @@ def retrieve_tabular(driver=None,
     :return: list
     """
     tabular = find_element(driver, field, web_element=web_element)
+    if tabular is None:
+        log.warning(f"Tabular {field} has not been found")
+        return tabular
     rows = tabular.find_elements_by_tag_name(row_and_col[0])
     tabular_as_list = []
 
