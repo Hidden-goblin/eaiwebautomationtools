@@ -24,6 +24,7 @@ def is_field_exist(driver=None,
                    avoid_move_to=False) -> Union[WebElement, None]:
     """
     Test if the field given as a {"type":"id","value":"toto"} dictionary exists.
+    :param avoid_move_to:
     :param driver: a selenium web driver
     :param field: a dictionary representing the web element to search
     :param web_element: a web_element to search from
@@ -42,7 +43,7 @@ def is_field_exist(driver=None,
                              timeout=until)
 
     except polling2.TimeoutException:
-        log.warning(f"information.is_field_exist raised a TimeoutException for "
+        log.info(f"information.is_field_exist raised a TimeoutException for "
                     f"the following field '{field}'")
         return None
 
@@ -55,6 +56,7 @@ def is_field_contains_text(driver=None,
     """
     Check if the given field contains the text either as a DOM text or value text.
     {"type":"id","value":"toto"}
+    :param avoid_move_to:
     :param driver: a selenium web driver
     :param field: a dictionary representing the web element to search
     :param web_element: a web_element to search from
@@ -95,6 +97,7 @@ def element_text(driver=None,
                  avoid_move_to=False) -> Union[str, None]:
     """
     Return the text of the element
+    :param avoid_move_to:
     :param driver: a selenium web driver
     :param field: a dictionary corresponding to the field to retrieve the text
     :param web_element: a webElement to search the field from
@@ -141,6 +144,7 @@ def how_many_windows(driver=None):
 def is_field_displayed(driver=None, field=None, web_element=None, avoid_move_to=False):
     """
     Check if the element is displayed. You may not interact with it.
+    :param avoid_move_to:
     :param driver: a selenium web driver
     :param field: a dictionary corresponding to the field to retrieve the text
     :param web_element: a webElement to search the field from
@@ -151,7 +155,7 @@ def is_field_displayed(driver=None, field=None, web_element=None, avoid_move_to=
                              web_element=web_element,
                              avoid_move_to=avoid_move_to)
     if element is None:
-        log.warning(f"Element '{field}' doesn't exist in the DOM")
+        log.info(f"Element '{field}' doesn't exist in the DOM")
         return False
     try:
         polling2.poll(lambda: element.is_displayed(),
@@ -163,7 +167,7 @@ def is_field_displayed(driver=None, field=None, web_element=None, avoid_move_to=
                       )
         return True
     except polling2.TimeoutException:
-        log.warning(f"Element '{field}' is not displayed")
+        log.info(f"Element '{field}' is not displayed")
         return False
 
 
@@ -174,6 +178,7 @@ def is_field_enabled(driver=None,
                      avoid_move_to=False) -> bool:
     """
     Check if the element is enabled.
+    :param avoid_move_to:
     :param driver: a selenium web driver
     :param field: a dictionary representing the web element to search
     :param web_element: a web_element to search from
@@ -213,6 +218,7 @@ def is_checkbox_checked(driver=None,
                         avoid_move_to=False):
     """
     Return the checkbox status
+    :param avoid_move_to:
     :param driver: a selenium web driver
     :param field: a dictionary representing the web element to search
     :param web_element: a web_element to search from
@@ -232,7 +238,7 @@ def is_checkbox_checked(driver=None,
 
 
 def retrieve_tabular(driver=None,
-                     field=None, web_element=None, row_and_col=("tr", "td", "th")) -> Union[list,None]:
+                     field=None, web_element=None, row_and_col=("tr", "td", "th")) -> Union[list, None]:
     """
     Return the tabular as a list of elements.
     Elements are either lists or dictionaries depending on the presence of headers
