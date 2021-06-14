@@ -131,7 +131,11 @@ To Do
 
 Release Notes
 =============
-
+- version 1.0.10:
+    - lower log level for polling actions
+- version 1.0.9:
+    - add chromium from DriverManager in BrowserServer
+    - actions and finders return None if element not found 
 - version 1.0.8:
     - add avoid_move_to option on find_element in order to retrieve an element without moving to it
     - add minor tests
