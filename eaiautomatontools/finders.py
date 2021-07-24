@@ -77,8 +77,8 @@ def find_element(driver=None,
             move_to(driver, element, f"Find element: {field}")
         return element
     except NoSuchElementException as no_such_element:
-        log.warning("In find_element didn't find the element '{}'."
-                    " Exception is '{}'".format(field, no_such_element.args))
+        log.debug(f"In find_element didn't find the element '{field}'."
+                 f" Exception is '{no_such_element.args}'")
         return None
 
 
@@ -141,12 +141,11 @@ def find_from_elements(driver=None,
             return_element = element
             break
 
-    if return_element is not None:
-        if not avoid_move_to:
-            move_to(driver, return_element, f"Find from elements '{field}' and '{text}'")
-    else:
-        log.warning(f"Element designed by field '{field}' and text '{text}'"
-                    " could not be located.")
+    if return_element is None:
+        log.debug(f"Element designed by field '{field}' and text '{text}'"
+                  " could not be located.")
+    elif not avoid_move_to:
+        move_to(driver, return_element, f"Find from elements '{field}' and '{text}'")
     return return_element
 
 

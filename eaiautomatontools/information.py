@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from time import perf_counter
+
 import polling2
 
 from typing import Union
@@ -13,15 +15,14 @@ from selenium.common.exceptions import ElementNotInteractableException, NoSuchEl
 from .drivers_tools import driver_field_validation, web_drivers_tuple, web_element_validation
 from .finders import find_element
 
-
 log = getLogger(__name__)
 
 
 def is_field_exist(driver=None,
-                   field=None,
-                   web_element=None,
-                   until=5,
-                   avoid_move_to=False) -> Union[WebElement, None]:
+                   field: dict = None,
+                   web_element: WebElement = None,
+                   until: int = 5,
+                   avoid_move_to: bool = False) -> Union[WebElement, None]:
     """
     Test if the field given as a {"type":"id","value":"toto"} dictionary exists.
     :param avoid_move_to:
@@ -44,15 +45,15 @@ def is_field_exist(driver=None,
 
     except polling2.TimeoutException:
         log.info(f"information.is_field_exist raised a TimeoutException for "
-                    f"the following field '{field}'")
+                 f"the following field '{field}'")
         return None
 
 
 def is_field_contains_text(driver=None,
-                           field=None,
-                           web_element=None,
-                           text=None,
-                           avoid_move_to=False) -> bool:
+                           field: dict = None,
+                           web_element: WebElement = None,
+                           text: str = None,
+                           avoid_move_to: bool = False) -> bool:
     """
     Check if the given field contains the text either as a DOM text or value text.
     {"type":"id","value":"toto"}
@@ -76,7 +77,7 @@ def is_field_contains_text(driver=None,
             and text in element.get_attribute("value"))
 
 
-def is_alert_present(driver=None, until=5):
+def is_alert_present(driver=None, until: int = 5):
     """
     Tells if whatever an alert is present or not.
     :param driver: a selenium web driver
@@ -92,9 +93,9 @@ def is_alert_present(driver=None, until=5):
 
 
 def element_text(driver=None,
-                 field=None,
-                 web_element=None,
-                 avoid_move_to=False) -> Union[str, None]:
+                 field: dict = None,
+                 web_element: WebElement = None,
+                 avoid_move_to: bool = False) -> Union[str, None]:
     """
     Return the text of the element
     :param avoid_move_to:
@@ -141,26 +142,32 @@ def how_many_windows(driver=None):
     return len(driver.window_handles)
 
 
-def is_field_displayed(driver=None, field=None, web_element=None, avoid_move_to=False):
+def is_field_displayed(driver=None,
+                       field: dict = None,
+                       web_element: WebElement = None,
+                       avoid_move_to: bool = False,
+                       wait_until: int = 5):
     """
     Check if the element is displayed. You may not interact with it.
-    :param avoid_move_to:
     :param driver: a selenium web driver
     :param field: a dictionary corresponding to the field to retrieve the text
     :param web_element: a webElement to search the field from
+    :param avoid_move_to: Avoid to move into view the WebElement
+    :param wait_until: The default wait field existence and display
     :return: Boolean. True if element is displayed, false otherwise.
     """
     element = is_field_exist(driver=driver,
                              field=field,
                              web_element=web_element,
-                             avoid_move_to=avoid_move_to)
+                             avoid_move_to=avoid_move_to,
+                             until=wait_until)
     if element is None:
         log.info(f"Element '{field}' doesn't exist in the DOM")
         return False
     try:
         polling2.poll(lambda: element.is_displayed(),
                       step=0.2,
-                      timeout=10,
+                      timeout=wait_until,
                       ignore_exceptions=(NoSuchElementException,
                                          StaleElementReferenceException,
                                          ElementNotInteractableException)
@@ -175,28 +182,30 @@ def is_field_enabled(driver=None,
                      field=None,
                      web_element=None,
                      attribute=None,
-                     avoid_move_to=False) -> bool:
+                     avoid_move_to=False,
+                     wait_until: int = 5) -> bool:
     """
     Check if the element is enabled.
-    :param avoid_move_to:
     :param driver: a selenium web driver
     :param field: a dictionary representing the web element to search
     :param web_element: a web_element to search from
     :param attribute: the attribute to check for enabled
+    :param avoid_move_to: Avoid to move into view the WebElement
+    :param wait_until: The default wait field existence and display
     :return: Boolean. True if element is enabled, false otherwise for non attribute.
             Attribute string otherwise
     """
     element = is_field_exist(driver=driver,
                              field=field,
                              web_element=web_element,
-                             avoid_move_to=avoid_move_to)
-    if element is not None:
-        if attribute is not None:
-            return element.get_attribute(attribute)
-        else:
-            return element.is_enabled()
-    else:
+                             avoid_move_to=avoid_move_to,
+                             until=wait_until)
+    if element is None:
         return False
+    if attribute is not None:
+        return element.get_attribute(attribute)
+    else:
+        return element.is_enabled()
 
 
 def where_am_i(driver=None):
@@ -212,10 +221,11 @@ def where_am_i(driver=None):
 
 
 def is_checkbox_checked(driver=None,
-                        field=None,
-                        web_element=None,
-                        is_angular=False,
-                        avoid_move_to=False):
+                        field: dict = None,
+                        web_element: WebElement = None,
+                        is_angular: bool = False,
+                        avoid_move_to: bool = False,
+                        wait_until: int = 5):
     """
     Return the checkbox status
     :param avoid_move_to:
@@ -223,12 +233,14 @@ def is_checkbox_checked(driver=None,
     :param field: a dictionary representing the web element to search
     :param web_element: a web_element to search from
     :param is_angular: boolean
+    :param wait_until: The default wait field existence and display
     :return: boolean
     """
     element = is_field_exist(driver=driver,
                              field=field,
                              web_element=web_element,
-                             avoid_move_to=avoid_move_to)
+                             avoid_move_to=avoid_move_to,
+                             until=wait_until)
     if element is None:
         log.warning(f"Element {field} not found")
     if is_angular:
@@ -238,7 +250,9 @@ def is_checkbox_checked(driver=None,
 
 
 def retrieve_tabular(driver=None,
-                     field=None, web_element=None, row_and_col=("tr", "td", "th")) -> Union[list, None]:
+                     field=None,
+                     web_element=None,
+                     row_and_col=("tr", "td", "th")) -> Union[list, None]:
     """
     Return the tabular as a list of elements.
     Elements are either lists or dictionaries depending on the presence of headers
@@ -264,3 +278,20 @@ def retrieve_tabular(driver=None,
         tabular_as_list.append([column.text for column in columns])
 
     return tabular_as_list
+
+
+def wait_for_another_window(driver, until: int = 1) -> bool:
+    """Wait for another window for at most 'until' seconds
+        :param driver: ta selenium web driver
+        :param until: the maximum duration to wait
+        :return True if another windows pops in the duration False otherwise
+        """
+    try:
+        start = perf_counter()
+        under_max_time = True
+        while len(driver.window_handles) == 1 and under_max_time:
+            if int(perf_counter() - start) > until:
+                under_max_time = False
+        return under_max_time
+    except Exception as exception:
+        log.error(f"Retrieve the following error:\n {exception.args}")

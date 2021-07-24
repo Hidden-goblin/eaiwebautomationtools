@@ -3,6 +3,8 @@
 import os.path
 import logging
 import tempfile
+from typing import List, Union
+
 from deprecated import deprecated
 from shutil import rmtree
 from datetime import datetime
@@ -27,7 +29,8 @@ from .actions import fill_element, fill_elements, select_in_dropdown, set_checkb
     click_element, select_in_angular_dropdown, hover_element, select_in_elements
 from .alerts import alert_message, intercept_alert
 from .information import is_alert_present, is_field_exist, is_field_contains_text, \
-    element_text, is_field_displayed, is_field_enabled, how_many_windows, where_am_i, \
+    element_text, is_field_displayed, is_field_enabled, how_many_windows, wait_for_another_window, \
+    where_am_i, \
     is_checkbox_checked, retrieve_tabular
 from .drivers_tools import fullpage_screenshot, move_to
 
@@ -272,7 +275,7 @@ class BrowserServer:
 
     # Start of convenient usage of the automaton tools
     # Navigation
-    def go_to(self, url=None):
+    def go_to(self, url: str = None):
         """Navigate to the given url"""
         return go_to_url(driver=self.webdriver, url=url)
 
@@ -280,7 +283,7 @@ class BrowserServer:
         """Enter the frame found using the find_element method"""
         return enter_frame(driver=self.webdriver, field=field, web_element=web_element)
 
-    def go_to_window(self, handle=None, title=None):
+    def go_to_window(self, handle: Union[str, int] = None, title: str = None):
         """Switch to a window providing either the window handle or window title"""
         return go_to_window(driver=self.webdriver, handle=handle, title=title)
 
@@ -299,7 +302,10 @@ class BrowserServer:
         """Find elements using the current webdriver or the provided WebElement"""
         return find_elements(driver=self.webdriver, field=field, web_element=web_element)
 
-    def find_from_elements(self, field=None, text=None, web_element: WebElement = None):
+    def find_from_elements(self,
+                           field: dict = None,
+                           text: str = None,
+                           web_element: WebElement = None):
         """Find element from a list of elements based on the text (exact match)"""
         return find_from_elements(driver=self.webdriver,
                                   field=field,
@@ -320,14 +326,14 @@ class BrowserServer:
         return find_sub_element_from_element(element, field=field)
 
     # Actions
-    def fill_element(self, field=None, web_element=None, value=None):
+    def fill_element(self, field: dict = None, web_element: WebElement = None, value: str = None):
         """Fill the element with the value. Use the find_element method to find it"""
         return fill_element(driver=self.webdriver,
                             field=field,
                             web_element=web_element,
                             value=value)
 
-    def fill_elements(self, fields=None, web_element=None, data=None):
+    def fill_elements(self, fields: dict = None, web_element: WebElement = None, data: dict = None):
         """Fill data in the respective field. data and fields keys must match.
         data keys must be in field keys"""
         return fill_elements(driver=self.webdriver,
@@ -336,14 +342,14 @@ class BrowserServer:
                              data=data)
 
     # TODO add unit test
-    def click_element(self, field=None, web_element=None):
+    def click_element(self, field: dict = None, web_element: WebElement = None):
         """Perform a click element on the element. Use the find_element method to find it"""
         return click_element(driver=self.webdriver,
                              field=field,
                              web_element=web_element)
 
-    def select_in_dropdown(self, field=None, visible_text=None, value=None):
-
+    def select_in_dropdown(self, field: dict = None, visible_text: str = None, value: str = None):
+        """Select in field dropdown either the option by its visible text or its value"""
         return select_in_dropdown(driver=self.webdriver,
                                   field=field,
                                   visible_text=visible_text,
@@ -358,49 +364,69 @@ class BrowserServer:
 
     # TODO add unit test
     def select_in_angular_dropdown(self, root_field=None, visible_text=None):
+        """Select a field within a mat_option list
+
+    If root_field is defined then click it and search for visible_text in mat-option elements.
+    Otherwise only search for visible_text in mat-options elements"""
         return select_in_angular_dropdown(driver=self.webdriver,
                                           root_field=root_field,
                                           visible_text=visible_text)
 
-    def set_checkbox(self, field=None, is_checked=None):
+    def set_checkbox(self, field: dict = None, is_checked: bool = None):
+        """Set the field checkbox to the is_checked state"""
         return set_checkbox(driver=self.webdriver,
                             field=field,
                             is_checked=is_checked)
 
     # TODO add unit test
-    def hover_element(self, field=None):
+    def hover_element(self, field: dict = None):
         return hover_element(driver=self.webdriver, field=field)
 
     # TODO add unit test
-    def select_in_elements(self, field=None, displayed_text=None):
+    def select_in_elements(self,
+                           field: dict = None,
+                           displayed_text: str = None,
+                           web_element: WebElement = None) -> int:
+        """Do a click on the element which text match"""
         return select_in_elements(driver=self.webdriver,
                                   field=field,
-                                  displayed_text=displayed_text)
+                                  displayed_text=displayed_text,
+                                  web_element=web_element)
 
-    def execute_script(self, script: str, web_element: WebElement):
-        self.webdriver.execute_script(script, web_element)
+    def execute_script(self, script: str, web_element: WebElement = None):
+        if web_element is not None:
+            self.webdriver.execute_script(script, web_element)
+        else:
+            self.webdriver.execute_script(script)
 
     # Alerts
     def alert_message(self):
         return alert_message(driver=self.webdriver)
 
-    def intercept_alert(self, messages=None, accept=True, value=None):
+    def intercept_alert(self, messages: List[str] = None, accept: bool = True, value: str = None):
         return intercept_alert(driver=self.webdriver, messages=messages,
                                accept=accept, value=value)
 
     # Information
 
-    def is_alert_present(self, until=5):
+    def is_alert_present(self, until: int = 5):
         return is_alert_present(driver=self.webdriver, until=until)
 
-    def is_field_exist(self, field=None, web_element=None, until=5, avoid_move_to=True):
+    def is_field_exist(self,
+                       field: dict = None,
+                       web_element: WebElement = None,
+                       until: int = 5,
+                       avoid_move_to: bool = True):
         return is_field_exist(driver=self.webdriver,
                               field=field,
                               web_element=web_element,
                               until=until,
                               avoid_move_to=avoid_move_to)
 
-    def is_field_contains_text(self, field=None, web_element=None, text=None):
+    def is_field_contains_text(self,
+                               field: dict = None,
+                               web_element: WebElement = None,
+                               text: str = None):
         return is_field_contains_text(driver=self.webdriver,
                                       field=field,
                                       web_element=web_element,
@@ -433,7 +459,12 @@ class BrowserServer:
         return where_am_i(driver=self.webdriver)
 
     # TODO add unit test
-    def is_checkbox_checked(self, field=None, web_element=None, is_angular=False):
+    def is_checkbox_checked(self,
+                            field: dict = None,
+                            web_element: WebElement = None,
+                            is_angular: bool = False):
         return is_checkbox_checked(driver=self.webdriver, field=field, web_element=web_element,
                                    is_angular=is_angular)
 
+    def wait_for_another_window(self, wait_until: int = 1):
+        return wait_for_another_window(driver=self.webdriver, until=wait_until)

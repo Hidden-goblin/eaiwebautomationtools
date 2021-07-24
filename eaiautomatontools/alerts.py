@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 from logging import getLogger
+from typing import List
+
 from selenium.common.exceptions import ElementNotSelectableException, NoAlertPresentException, \
     ElementNotInteractableException
 from .drivers_tools import driver_field_validation
@@ -7,7 +9,10 @@ from .drivers_tools import driver_field_validation
 log = getLogger(__name__)
 
 
-def intercept_alert(driver=None, messages=None, accept=True, value=None):
+def intercept_alert(driver=None,
+                    messages: List[str] = None,
+                    accept: bool = True,
+                    value: str = None):
     """
         intercept_alert goal is to provide an easy interface to handle alerts.
 
@@ -16,10 +21,10 @@ def intercept_alert(driver=None, messages=None, accept=True, value=None):
         Giving only the web driver accept the alert whatever the message is.
 
         Giving a list of messages, ensure that the alert message is one of the list.
-    :param value: The string to be entered in the prompt alert.
     :param driver: a selenium webdriver
     :param messages: A list of string which should include the alert message.
     :param accept: boolean defaulted to True. Accept or dismiss the alert.
+    :param value: The string to be entered in the prompt alert.
     :raise AssertionError: driver, messages, accept and value aren't of the expected type
     :raise ElementNotSelectableException: when trying to send keys on a non-prompt alert
     :raise NoAlertPresentException: when trying to intercept an alert which not present

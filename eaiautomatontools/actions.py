@@ -133,7 +133,9 @@ def select_in_dropdown(driver=None,
         raise Exception(exception.args[0]) from None
 
 
-def select_in_angular_dropdown(driver=None, root_field=None, visible_text: str = None):
+def select_in_angular_dropdown(driver=None,
+                               root_field: dict = None,
+                               visible_text: str = None) -> int:
     """
     Select a field within a mat_option list
 
@@ -156,17 +158,18 @@ def select_in_angular_dropdown(driver=None, root_field=None, visible_text: str =
             element.click()
         else:
             raise Exception('No options displayed within 5 seconds')
-
+        return 0
     except StaleElementReferenceException as stale_exception:
         log.warning("StaleElementReferenceException. Selection should be done.\n{}".format(
             stale_exception.args))
-        return 0
+        return 1
     except Exception as exception:
         log.error(exception.args)
         raise Exception(exception.args[0]) from None
 
 
-def click_element(driver=None, field=None, web_element: WebElement = None) -> 1:
+def click_element(driver=None,
+                  field: dict = None, web_element: WebElement = None) -> int:
     """
     Do simple left click on the given field or on the sub element when web_element is provided
     :param driver: a selenium web driver
@@ -193,7 +196,10 @@ def click_element(driver=None, field=None, web_element: WebElement = None) -> 1:
     return 1
 
 
-def set_checkbox(driver=None, field=None, is_checked=None, web_element=None):
+def set_checkbox(driver=None,
+                 field: dict = None,
+                 is_checked: bool = None,
+                 web_element: WebElement = None) -> int:
     """
     Set a checkbox to a specific state: True for checked, False for unchecked
     :param driver: a selenium web driver
@@ -225,12 +231,12 @@ def set_checkbox(driver=None, field=None, is_checked=None, web_element=None):
     return 0
 
 
-def hover_element(driver=None, field=None):
+def hover_element(driver=None, field: dict = None) -> int:
     """
     Do simple hover on the given field
     :param driver: a selenium web driver
     :param field: a dictionary
-    :raise AssertionError: driver is not define, field is not valid
+    :raise AssertionError: driver is not defined, field is not valid
     :return: 0 if success
     """
     driver_field_validation(driver, field, log)
@@ -244,13 +250,17 @@ def hover_element(driver=None, field=None):
         raise Exception(exception.args[0]) from None
 
 
-def select_in_elements(driver=None, field=None, displayed_text=None, web_element=None) -> int:
+def select_in_elements(driver=None,
+                       field: dict = None,
+                       displayed_text: str = None,
+                       web_element: WebElement = None) -> int:
     """
-    TODO Add the capability to select a field from an webelement child
-    Do a click on the element which text
+    Do a click on the element which text match
     :param driver: a selenium web driver
     :param field: a dictionary
     :param displayed_text: a string
+    :param web_element:
+    :raise AttributeError: driver is not defined, field or displayed_text is not valid
     :return: 0 if success
     """
     driver_field_validation(driver, field, log)

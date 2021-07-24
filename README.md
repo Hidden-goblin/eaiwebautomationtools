@@ -131,6 +131,10 @@ To Do
 
 Release Notes
 =============
+- version 1.0.12:
+    - lower log level for finder(s) actions
+    - add wait_for_another_window in information
+    - add typing annotations
 - version 1.0.11:
     - lower log level for polling actions
 - version 1.0.10:
