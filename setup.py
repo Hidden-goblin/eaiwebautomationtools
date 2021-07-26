@@ -6,7 +6,7 @@ with open("README.md", "r") as file:
 
 setup(
     name="eaiautomatontools",
-    version="1.0.11",
+    version="1.0.12",
     description="UI utilities in order to abstract selenium commands",
     long_description=long_description,
     long_description_content_type="text/markdown",
