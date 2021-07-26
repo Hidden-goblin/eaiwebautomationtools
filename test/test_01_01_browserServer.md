@@ -19,7 +19,7 @@ Without settings the server is not usable
     >>> myBrowser.serve()
     Traceback (most recent call last):
     ...
-    AttributeError: You must set a browser name. Use one of '('chrome', 'firefox', 'opera', 'edge', 'safari', 'headless-chrome')'
+    AttributeError: You must set a browser name. Use one of '('chrome', 'firefox', 'opera', 'edge', 'safari', 'headless-chrome', 'chromium', 'headless-chromium')'
 
 
 ## Setting the browser name
@@ -33,7 +33,7 @@ If you don't you get an error.
     >>> myBrowser.browser_name = 'toto'
     Traceback (most recent call last):
     ...
-    ValueError: Unknown browser name. Get toto instead of ('chrome', 'firefox', 'opera', 'edge', 'safari', 'headless-chrome')
+    ValueError: Unknown browser name. Get toto instead of ('chrome', 'firefox', 'opera', 'edge', 'safari', 'headless-chrome', 'chromium', 'headless-chromium')
 
 Name are not case sensitive
 

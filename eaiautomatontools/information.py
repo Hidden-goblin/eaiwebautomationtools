@@ -179,10 +179,10 @@ def is_field_displayed(driver=None,
 
 
 def is_field_enabled(driver=None,
-                     field=None,
-                     web_element=None,
-                     attribute=None,
-                     avoid_move_to=False,
+                     field: dict = None,
+                     web_element: WebElement = None,
+                     attribute: str = None,
+                     avoid_move_to: bool = False,
                      wait_until: int = 5) -> bool:
     """
     Check if the element is enabled.
