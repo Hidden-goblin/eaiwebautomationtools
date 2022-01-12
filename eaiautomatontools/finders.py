@@ -66,7 +66,8 @@ def find_element(driver=None,
             return find_from_elements(driver=driver,
                                       field=field,
                                       text=field['text'],
-                                      web_element=web_element)
+                                      web_element=web_element,
+                                      avoid_move_to=avoid_move_to)
 
         if web_element is None:
             element = __find_element(driver, field)
@@ -78,7 +79,7 @@ def find_element(driver=None,
         return element
     except NoSuchElementException as no_such_element:
         log.debug(f"In find_element didn't find the element '{field}'."
-                 f" Exception is '{no_such_element.args}'")
+                  f" Exception is '{no_such_element.args}'")
         return None
 
 
