@@ -13,7 +13,7 @@ from selenium.common.exceptions import ElementNotInteractableException, NoSuchEl
     TimeoutException
 
 from .drivers_tools import driver_field_validation, web_drivers_tuple, web_element_validation
-from .finders import find_element
+from .finders import find_element, find_elements
 
 log = getLogger(__name__)
 
@@ -268,13 +268,21 @@ def retrieve_tabular(driver=None,
     if tabular is None:
         log.warning(f"Tabular {field} has not been found")
         return tabular
-    rows = tabular.find_elements_by_tag_name(row_and_col[0])
+    # rows = tabular.find_elements_by_tag_name(row_and_col[0])
+    rows = find_elements(driver,
+                         {"type": "tag_name", "value": row_and_col[0]},
+                         tabular)
     tabular_as_list = []
 
     for row in rows:
-        columns = row.find_elements_by_tag_name(row_and_col[1])
+        # columns = row.find_elements_by_tag_name(row_and_col[1])
+        columns = find_elements(driver,
+                                {"type": "tag_name", "value": row_and_col[1]},
+                                row)
         if not columns:
-            columns = row.find_elements_by_tag_name(row_and_col[2])
+            columns = find_elements(driver,
+                                    {"type": "tag_name", "value": row_and_col[2]},
+                                    row)
         tabular_as_list.append([column.text for column in columns])
 
     return tabular_as_list

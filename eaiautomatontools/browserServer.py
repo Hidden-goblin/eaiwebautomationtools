@@ -15,6 +15,10 @@ from selenium.webdriver.firefox.options import Options as FfOptions
 from selenium.webdriver.edge.options import Options as EdgOptions
 from selenium.webdriver.opera.options import Options as OpeOptions
 from selenium.webdriver.remote.webelement import WebElement
+# Driver's Service
+from selenium.webdriver.chrome.service import Service as ChrService
+from selenium.webdriver.firefox.service import Service as FfService
+from selenium.webdriver.edge.service import Service as EdgService
 # Driver Manager
 from webdriver_manager.chrome import ChromeDriverManager
 from webdriver_manager.firefox import GeckoDriverManager
@@ -57,6 +61,16 @@ class BrowserServer:
         "edge": EdgOptions
     }
 
+    __SERVICE_SWITCHER = {
+        "chrome": ChrService,
+        "headless-chrome": ChrService,
+        "chromium": ChrService,
+        "headless-chromium": ChrService,
+        "firefox": FfService,
+        "opera": ChrService,
+        "edge": EdgService
+    }
+
     __DRIVER_MANAGER = {
         "chrome": ChromeDriverManager,
         "headless-chrome": ChromeDriverManager,
@@ -77,6 +91,7 @@ class BrowserServer:
         "safari": webdriver.Safari,
         "opera": webdriver.Opera
     }
+
 
     def __init__(self):
         # Definition of private attributes and references
@@ -189,8 +204,9 @@ class BrowserServer:
                 else:
                     self.__driver_path = BrowserServer.__DRIVER_MANAGER[
                         self.browser_name]().install()
+            service = BrowserServer.__SERVICE_SWITCHER[self.browser_name](self.__driver_path)
             self.__web_driver = BrowserServer.__WEB_DRIVERS[self.browser_name](
-                executable_path=self.__driver_path,
+                service=service,
                 options=option
             )
         elif "chrom" in self.browser_name:
@@ -208,8 +224,9 @@ class BrowserServer:
             if self.driver_options:
                 for opt in self.driver_options:
                     option.add_argument(opt)
+            service = BrowserServer.__SERVICE_SWITCHER[self.browser_name](self.__driver_path)
             self.__web_driver = BrowserServer.__WEB_DRIVERS[self.browser_name](
-                executable_path=self.__driver_path,
+                service=service,
                 options=option
             )
         elif self.browser_name is not None:
@@ -220,8 +237,9 @@ class BrowserServer:
             if self.driver_options:
                 for opt in self.driver_options:
                     option.add_argument(opt)
+            service = BrowserServer.__SERVICE_SWITCHER[self.browser_name](self.__driver_path)
             self.__web_driver = BrowserServer.__WEB_DRIVERS[self.browser_name](
-                executable_path=self.__driver_path,
+                service=service,
                 options=option)
 
         else:
