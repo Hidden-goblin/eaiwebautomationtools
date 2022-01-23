@@ -112,8 +112,9 @@ This module space is about filling, selecting and clicking on web element.
 - fill\_element(field,value): return 0 if successful, fill the field with the value
 - fill\_elements(fields, data): return 0 if successful, fill each field in the fields dictionary with the value hold in the data dictionary. You can have a larger fields dictionary than the data but each data entry must be found in the fields dictionary. 
 - select\_in\_dropdown(field,visible\_text,value): return 0 if successful, select in the field dropdown the element either described by its visible text or its hidden value. 
-- click\_element(field): return 0 if successful, perform a left click on the field. 
-- set\_checked(field,is\_checked): return 0 if successful, set the check box field so that the is\_checked value is always true i.e. checked if is\_checked set to true and not checked if is\_checked set to false.
+- click\_element(field): return 0 if successful, perform a left click on the field.
+- mouse\_click(field): return 0 if successful, perform a chain action moving the mouse on the element and mouse click element.
+- set\_checked(field,is\_checked): return 0 if successful, set the checkbox field so that the is\_checked value is always true i.e. checked if is\_checked set to true and not checked if is\_checked set to false.
 
 Other documentation
 ===================
@@ -133,6 +134,7 @@ Release Notes
 =============
 - version 1.0.14:
   - fix missing `web_element` variable in `BrowserServer.set_checkbox` method
+  - add `mouse_click` method in the actions
 - version 1.0.13:
   - fix missing `avoid_move_to` passing value to find_from_elements when using find_element in conjunction with `text` parameter. 
 - version 1.0.12:
