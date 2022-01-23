@@ -30,7 +30,7 @@ setup(
         'Programming Language :: Python :: 3.8',
     ],
     install_requires=[
-        'selenium>=3.14',
+        'selenium>=4.0',
         'Pillow>=8.1.1',
         'webdriver-manager',
         'Deprecated',
