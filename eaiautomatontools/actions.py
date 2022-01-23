@@ -169,7 +169,8 @@ def select_in_angular_dropdown(driver=None,
 
 
 def click_element(driver=None,
-                  field: dict = None, web_element: WebElement = None) -> int:
+                  field: dict = None,
+                  web_element: WebElement = None) -> int:
     """
     Do simple left click on the given field or on the sub element when web_element is provided
     :param driver: a selenium web driver
@@ -183,17 +184,51 @@ def click_element(driver=None,
     iteration = 0
     while iteration < 5:
         try:
-            web_element = find_element(driver=driver, field=field, web_element=web_element)
-            if web_element is None:
+            found_element = find_element(driver=driver, field=field, web_element=web_element)
+            if found_element is None:
                 iteration += 1
                 continue
-            web_element.click()
+            found_element.click()
             return 0
         except StaleElementReferenceException:
             log.info("StaleElementReferenceException retry after 100ms sleep")
             iteration += 1
             sleep(0.1)
     return 1
+
+
+def mouse_click(driver=None,
+                field: dict = None,
+                web_element: WebElement = None) -> int:
+    """
+    Perform a mouse click in the element center
+    :param driver:
+    :param field:
+    :param web_element:
+    :return:
+    """
+    driver_field_validation(driver, field, log)
+    web_element_validation(web_element, log)
+    iteration = 0
+    found_element = None
+    while iteration < 5:
+        try:
+            found_element = find_element(driver=driver, field=field, web_element=web_element)
+            if found_element is not None:
+                break
+            iteration += 1
+            continue
+        except StaleElementReferenceException:
+            log.info("StaleElementReferenceException retry after 100ms sleep")
+            iteration += 1
+            sleep(0.1)
+    if found_element is None:
+        return 1
+
+    my_action = ActionChains(driver)
+    my_action.click(found_element)
+    my_action.perform()
+    return 0
 
 
 def set_checkbox(driver=None,

@@ -25,7 +25,7 @@ from webdriver_manager.utils import ChromeType
 from .navigators import go_to_url, enter_frame, go_to_window
 from .finders import find_element, find_elements, find_from_elements, \
     find_sub_element_from_element
-from .actions import fill_element, fill_elements, select_in_dropdown, set_checkbox, \
+from .actions import fill_element, fill_elements, mouse_click, select_in_dropdown, set_checkbox, \
     click_element, select_in_angular_dropdown, hover_element, select_in_elements
 from .alerts import alert_message, intercept_alert
 from .information import is_alert_present, is_field_exist, is_field_contains_text, \
@@ -353,6 +353,12 @@ class BrowserServer:
                              field=field,
                              web_element=web_element)
 
+    def mouse_click(self, field: dict = None, web_element: WebElement = None):
+        """Perform a mouse click on the field. Use the find_element method to find if"""
+        return mouse_click(driver=self.webdriver,
+                           field=field,
+                           web_element=web_element)
+
     def select_in_dropdown(self, field: dict = None, visible_text: str = None, value: str = None):
         """Select in field dropdown either the option by its visible text or its value"""
         return select_in_dropdown(driver=self.webdriver,
@@ -377,11 +383,14 @@ class BrowserServer:
                                           root_field=root_field,
                                           visible_text=visible_text)
 
-    def set_checkbox(self, field: dict = None, is_checked: bool = None):
+    def set_checkbox(self, field: dict = None,
+                     is_checked: bool = None,
+                     web_element: WebElement = None):
         """Set the field checkbox to the is_checked state"""
         return set_checkbox(driver=self.webdriver,
                             field=field,
-                            is_checked=is_checked)
+                            is_checked=is_checked,
+                            web_element=web_element)
 
     # TODO add unit test
     def hover_element(self, field: dict = None):
