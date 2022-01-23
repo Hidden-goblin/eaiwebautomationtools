@@ -377,11 +377,14 @@ class BrowserServer:
                                           root_field=root_field,
                                           visible_text=visible_text)
 
-    def set_checkbox(self, field: dict = None, is_checked: bool = None):
+    def set_checkbox(self, field: dict = None,
+                     is_checked: bool = None,
+                     web_element: WebElement = None):
         """Set the field checkbox to the is_checked state"""
         return set_checkbox(driver=self.webdriver,
                             field=field,
-                            is_checked=is_checked)
+                            is_checked=is_checked,
+                            web_element=web_element)
 
     # TODO add unit test
     def hover_element(self, field: dict = None):

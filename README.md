@@ -131,7 +131,8 @@ To Do
 
 Release Notes
 =============
-
+- version 1.0.14:
+  - fix missing `web_element` variable in `BrowserServer.set_checkbox` method
 - version 1.0.13:
   - fix missing `avoid_move_to` passing value to find_from_elements when using find_element in conjunction with `text` parameter. 
 - version 1.0.12:
