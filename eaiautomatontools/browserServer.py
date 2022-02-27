@@ -335,7 +335,7 @@ class BrowserServer:
                                   text=text,
                                   web_element=web_element)
 
-    @deprecated(version="1.0.5", reason="You should user find_element with a web_element")
+    @deprecated(version="1.0.5", reason="You should use find_element with a web_element")
     def find_sub_element_from_element(self, field=None):
         """
         Find the webelement contained in another webelement.
