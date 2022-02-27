@@ -6,7 +6,7 @@ with open("README.md", "r") as file:
 
 setup(
     name="eaiautomatontools",
-    version="1.0.14",
+    version="1.1.0",
     description="UI utilities in order to abstract selenium commands",
     long_description=long_description,
     long_description_content_type="text/markdown",
@@ -30,7 +30,7 @@ setup(
         'Programming Language :: Python :: 3.8',
     ],
     install_requires=[
-        'selenium>=3.14',
+        'selenium>=4.0',
         'Pillow>=8.1.1',
         'webdriver-manager',
         'Deprecated',

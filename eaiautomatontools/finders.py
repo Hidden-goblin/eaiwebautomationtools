@@ -7,37 +7,29 @@ from deprecated.classic import deprecated
 from .drivers_tools import driver_field_validation, move_to, web_element_validation
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.remote.webelement import WebElement
+from selenium.webdriver.common.by import By
 from selenium.webdriver.common.action_chains import ActionChains
 
 log = logging.getLogger(__name__)
 
+BY_SWITCHER = {
+        "id": By.ID,
+        "name": By.NAME,
+        "class_name": By.CLASS_NAME,
+        "css": By.CSS_SELECTOR,
+        "link_text": By.LINK_TEXT,
+        "partial_link_text": By.PARTIAL_LINK_TEXT,
+        "tag_name": By.TAG_NAME,
+        "xpath": By.XPATH
+    }
+
 
 def __find_element(web_element, field: dict):
-    switcher = {
-        "id": web_element.find_element_by_id,
-        "name": web_element.find_element_by_name,
-        "class_name": web_element.find_element_by_class_name,
-        "css": web_element.find_element_by_css_selector,
-        "link_text": web_element.find_element_by_link_text,
-        "partial_link_text": web_element.find_element_by_partial_link_text,
-        "tag_name": web_element.find_element_by_tag_name,
-        "xpath": web_element.find_element_by_xpath
-    }
-    return switcher[field["type"]](field["value"])
+    return web_element.find_element(BY_SWITCHER[field["type"]], field["value"])
 
 
 def __find_elements(web_element, field: dict):
-    switcher = {
-        "id": web_element.find_elements_by_id,
-        "name": web_element.find_elements_by_name,
-        "class_name": web_element.find_elements_by_class_name,
-        "css": web_element.find_elements_by_css_selector,
-        "link_text": web_element.find_elements_by_link_text,
-        "partial_link_text": web_element.find_elements_by_partial_link_text,
-        "tag_name": web_element.find_elements_by_tag_name,
-        "xpath": web_element.find_elements_by_xpath
-    }
-    return switcher[field["type"]](field["value"])
+    return web_element.find_elements(BY_SWITCHER[field["type"]], field["value"])
 
 
 def find_element(driver=None,

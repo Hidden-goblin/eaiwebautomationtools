@@ -132,6 +132,8 @@ To Do
 
 Release Notes
 =============
+- version 1.1.0:
+  - add selenium 4 support. Relative locator are not included in the current "field" model
 - version 1.0.14:
   - fix missing `web_element` variable in `BrowserServer.set_checkbox` method
   - add `mouse_click` method in the actions
