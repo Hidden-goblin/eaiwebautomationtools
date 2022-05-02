@@ -132,6 +132,8 @@ To Do
 
 Release Notes
 =============
+- version 1.1.1:
+  - add browser_version attribute. It allows to specify a browser version so that the webdriver manager will use this specific version.
 - version 1.1.0:
   - add selenium 4 support. Relative locator are not included in the current "field" model
 - version 1.0.14:
