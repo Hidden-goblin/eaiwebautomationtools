@@ -114,6 +114,7 @@ class BrowserServer:
         self.__web_driver = None  # The webdriver
         self.__browser_name = None  # The browser's name used
         self.__driver_path = None  # The path to the webdriver executable
+        self.__browser_version = None  # The used browser's version
 
         # Definition of options
         self.__driver_options = []
@@ -159,6 +160,14 @@ class BrowserServer:
         self.__driver_path = None
 
     @property
+    def browser_version(self):
+        return self.__browser_version
+
+    @browser_version.setter
+    def browser_version(self, version: str):
+        self.__browser_version = version
+
+    @property
     def driver_path(self):
         return self.__driver_path
 
@@ -184,12 +193,14 @@ class BrowserServer:
         :return: 0 if success
         """
         # todo use the data in order to launch the expected webdriver
+        __params = {"version": self.browser_version} if self.browser_version is not None else {}
         if self.browser_name is None:
             raise AttributeError("You must set a browser name. "
                                  f"Use one of '{self.__authorized_name_version}'")
         elif self.browser_name == "safari":
+            __params["executable_path"] = self.driver_path
             self.__web_driver = BrowserServer.__WEB_DRIVERS[self.browser_name](
-                executable_path=self.driver_path)
+                **__params)
         elif "headless-chrom" in self.browser_name:
             option = BrowserServer.__OPTIONS_SWITCHER[self.browser_name]()
             option.add_experimental_option('excludeSwitches', ['enable-logging'])
@@ -214,11 +225,10 @@ class BrowserServer:
             # failed-to-read-descriptor-from-node-connection-a-device-attached-to-the-system
             if self.__driver_path is None:
                 if "ium" in self.browser_name:
-                    self.__driver_path = BrowserServer.__DRIVER_MANAGER[self.browser_name](
-                        chrome_type=ChromeType.CHROMIUM).install()
-                else:
-                    self.__driver_path = BrowserServer.__DRIVER_MANAGER[
-                        self.browser_name]().install()
+                    __params["chrome_type"] = ChromeType.CHROMIUM
+
+                self.__driver_path = BrowserServer.__DRIVER_MANAGER[
+                    self.browser_name](**__params).install()
             option = BrowserServer.__OPTIONS_SWITCHER[self.browser_name]()
             option.add_experimental_option('excludeSwitches', ['enable-logging'])
             if self.driver_options:
@@ -231,7 +241,9 @@ class BrowserServer:
             )
         elif self.browser_name is not None:
             if self.__driver_path is None:
-                self.__driver_path = BrowserServer.__DRIVER_MANAGER[self.browser_name]().install()
+                self.__driver_path = BrowserServer.__DRIVER_MANAGER[self.browser_name](
+                    **__params
+                ).install()
 
             option = BrowserServer.__OPTIONS_SWITCHER[self.browser_name]()
             if self.driver_options:
