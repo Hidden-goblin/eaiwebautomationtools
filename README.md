@@ -132,6 +132,8 @@ To Do
 
 Release Notes
 =============
+- version 1.1.2:
+  - fix missing version in headless webdriver
 - version 1.1.1:
   - add browser_version attribute. It allows to specify a browser version so that the webdriver manager will use this specific version.
 - version 1.1.0:
