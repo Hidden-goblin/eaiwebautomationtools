@@ -210,11 +210,10 @@ class BrowserServer:
             option.headless = True
             if self.__driver_path is None:
                 if "ium" in self.browser_name:
-                    self.__driver_path = BrowserServer.__DRIVER_MANAGER[self.browser_name](
-                        chrome_type=ChromeType.CHROMIUM).install()
-                else:
-                    self.__driver_path = BrowserServer.__DRIVER_MANAGER[
-                        self.browser_name]().install()
+                    __params["chrome_type"] = ChromeType.CHROMIUM
+
+                self.__driver_path = BrowserServer.__DRIVER_MANAGER[
+                        self.browser_name](**__params).install()
             service = BrowserServer.__SERVICE_SWITCHER[self.browser_name](self.__driver_path)
             self.__web_driver = BrowserServer.__WEB_DRIVERS[self.browser_name](
                 service=service,
@@ -239,7 +238,7 @@ class BrowserServer:
                 service=service,
                 options=option
             )
-        elif self.browser_name is not None:
+        else:
             if self.__driver_path is None:
                 self.__driver_path = BrowserServer.__DRIVER_MANAGER[self.browser_name](
                     **__params
@@ -254,9 +253,6 @@ class BrowserServer:
                 service=service,
                 options=option)
 
-        else:
-            raise AttributeError("You must set a browser name. "
-                                 f"Use one of '{self.__authorized_name_version}'")
         self.__launched = True
         return 0
 
