@@ -132,6 +132,10 @@ To Do
 
 Release Notes
 =============
+- version 1.1.4:
+  - fix merge issue
+- version 1.1.3:
+  - update import following webdriver manager change packaging structure
 - version 1.1.2:
   - fix missing version in headless webdriver
 - version 1.1.1:
