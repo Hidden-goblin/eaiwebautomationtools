@@ -198,8 +198,9 @@ class BrowserServer:
             raise AttributeError("You must set a browser name. "
                                  f"Use one of '{self.__authorized_name_version}'")
         elif self.browser_name == "safari":
+            __params["executable_path"] = self.driver_path
             self.__web_driver = BrowserServer.__WEB_DRIVERS[self.browser_name](
-                executable_path=self.driver_path)
+                **__params)
         elif "headless-chrom" in self.browser_name:
             option = BrowserServer.__OPTIONS_SWITCHER[self.browser_name]()
             option.add_experimental_option('excludeSwitches', ['enable-logging'])
