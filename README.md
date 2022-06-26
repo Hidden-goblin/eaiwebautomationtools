@@ -132,6 +132,9 @@ To Do
 
 Release Notes
 =============
+- version 1.1.5:
+  - fix removal of opera from webdriver
+  - `click_element` raise NoSuchElementException when element is not found
 - version 1.1.4:
   - fix merge issue
 - version 1.1.3:

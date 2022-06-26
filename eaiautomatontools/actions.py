@@ -160,8 +160,9 @@ def select_in_angular_dropdown(driver=None,
             raise Exception('No options displayed within 5 seconds')
         return 0
     except StaleElementReferenceException as stale_exception:
-        log.warning("StaleElementReferenceException. Selection should be done.\n{}".format(
-            stale_exception.args))
+        log.warning(f"StaleElementReferenceException."
+                    f" Selection should be done.\n{stale_exception.args}")
+
         return 1
     except Exception as exception:
         log.error(exception.args)
@@ -177,6 +178,7 @@ def click_element(driver=None,
     :param field: a dictionary
     :param web_element: an element from which to find the element to click
     :raise AssertionError: driver is not define, field is not valid
+    :raise NoSuchElementException: element to click has not been found
     :return: 0 if success
     """
     driver_field_validation(driver, field, log)
@@ -194,7 +196,7 @@ def click_element(driver=None,
             log.info("StaleElementReferenceException retry after 100ms sleep")
             iteration += 1
             sleep(0.1)
-    return 1
+    raise NoSuchElementException(f"Element {field} has not been found")
 
 
 def mouse_click(driver=None,

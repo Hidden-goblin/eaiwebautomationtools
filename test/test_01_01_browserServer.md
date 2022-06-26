@@ -47,6 +47,7 @@ At this moment you can serve a selenium web driver
 ## Serve a web driver
 
     >>> myBrowser.serve()
+    <BLANKLINE>
     0
 
 ## Get the web driver

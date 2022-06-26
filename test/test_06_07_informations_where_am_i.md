@@ -31,6 +31,7 @@ Use a default browser such as Chrome in 32 bit version
 Serve the web driver
 
     >>> myWebDriver.serve()
+    <BLANKLINE>
     0
   
     >>> myserver.start()

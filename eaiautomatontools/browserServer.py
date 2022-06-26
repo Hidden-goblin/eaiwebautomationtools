@@ -13,7 +13,12 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options as ChrOptions
 from selenium.webdriver.firefox.options import Options as FfOptions
 from selenium.webdriver.edge.options import Options as EdgOptions
-from selenium.webdriver.opera.options import Options as OpeOptions
+
+try:
+    from selenium.webdriver.opera.options import Options as OpeOptions
+except Exception:
+    OpeOptions = None
+
 from selenium.webdriver.remote.webelement import WebElement
 # Driver's Service
 from selenium.webdriver.chrome.service import Service as ChrService
@@ -89,9 +94,8 @@ class BrowserServer:
         "firefox": webdriver.Firefox,
         "edge": webdriver.Edge,
         "safari": webdriver.Safari,
-        "opera": webdriver.Opera
+        "opera": webdriver.Chrome if OpeOptions is None else webdriver.Opera
     }
-
 
     def __init__(self):
         # Definition of private attributes and references
@@ -185,23 +189,8 @@ class BrowserServer:
     def __serve_time():
         return int(datetime.now().timestamp() * 1000000)
 
-    def serve(self):
-        """
-        Create the webdriver instance
-        Todo incorporate the outside module resources locator
-        TODO Handle the case where you don't want to use the webdriver manager
-        :return: 0 if success
-        """
-        # todo use the data in order to launch the expected webdriver
-        __params = {"version": self.browser_version} if self.browser_version is not None else {}
-        if self.browser_name is None:
-            raise AttributeError("You must set a browser name. "
-                                 f"Use one of '{self.__authorized_name_version}'")
-        elif self.browser_name == "safari":
-            __params["executable_path"] = self.driver_path
-            self.__web_driver = BrowserServer.__WEB_DRIVERS[self.browser_name](
-                **__params)
-        elif "headless-chrom" in self.browser_name:
+    def __server_chrome(self, params: dict):
+        if "headless-chrom" in self.browser_name:
             option = BrowserServer.__OPTIONS_SWITCHER[self.browser_name]()
             option.add_experimental_option('excludeSwitches', ['enable-logging'])
             if self.driver_options:
@@ -210,10 +199,10 @@ class BrowserServer:
             option.headless = True
             if self.__driver_path is None:
                 if "ium" in self.browser_name:
-                    __params["chrome_type"] = ChromeType.CHROMIUM
+                    params["chrome_type"] = ChromeType.CHROMIUM
 
                 self.__driver_path = BrowserServer.__DRIVER_MANAGER[
-                        self.browser_name](**__params).install()
+                    self.browser_name](**params).install()
             service = BrowserServer.__SERVICE_SWITCHER[self.browser_name](self.__driver_path)
             self.__web_driver = BrowserServer.__WEB_DRIVERS[self.browser_name](
                 service=service,
@@ -224,10 +213,10 @@ class BrowserServer:
             # failed-to-read-descriptor-from-node-connection-a-device-attached-to-the-system
             if self.__driver_path is None:
                 if "ium" in self.browser_name:
-                    __params["chrome_type"] = ChromeType.CHROMIUM
+                    params["chrome_type"] = ChromeType.CHROMIUM
 
                 self.__driver_path = BrowserServer.__DRIVER_MANAGER[
-                    self.browser_name](**__params).install()
+                    self.browser_name](**params).install()
             option = BrowserServer.__OPTIONS_SWITCHER[self.browser_name]()
             option.add_experimental_option('excludeSwitches', ['enable-logging'])
             if self.driver_options:
@@ -238,21 +227,68 @@ class BrowserServer:
                 service=service,
                 options=option
             )
+        self.__launched = True
+
+    def __serve_opera(self, params):
+        if OpeOptions is not None:
+            return self.__serve_other(params)
+        if "binary_location" not in self.driver_options:
+            raise KeyError("Currently Opera does not have any webdriver implementation and "
+                           "use the chromedriver version. You must add 'binary_location' "
+                           "to the driver_options.\n "
+                           "See 'https://www.selenium.dev/documentation/webdriver/"
+                           "getting_started/open_browser/#opera'")
+        self.browser_name = "chrome"
+        try:
+            self.__server_chrome(params)
+        except Exception:
+            self.browser_name = "opera"
+            raise
+
+    def __serve_safari(self, params):
+        params["executable_path"] = self.driver_path
+        self.__web_driver = BrowserServer.__WEB_DRIVERS[self.browser_name](
+            **params)
+        self.__launched = True
+
+    def __serve_other(self, params):
+        if self.__driver_path is None:
+            self.__driver_path = BrowserServer.__DRIVER_MANAGER[self.browser_name](
+                **params
+            ).install()
+
+        option = BrowserServer.__OPTIONS_SWITCHER[self.browser_name]()
+        if self.driver_options:
+            for opt in self.driver_options:
+                option.add_argument(opt)
+        service = BrowserServer.__SERVICE_SWITCHER[self.browser_name](self.__driver_path)
+        self.__web_driver = BrowserServer.__WEB_DRIVERS[self.browser_name](
+            service=service,
+            options=option)
+        self.__launched = True
+
+    def serve(self):
+        """
+        Create the webdriver instance
+        Todo incorporate the outside module resources locator
+        TODO Handle the case where you don't want to use the webdriver manager
+        :return: 0 if success
+        """
+        # Split in sub serve function
+        # todo use the data in order to launch the expected webdriver
+        __params = {"version": self.browser_version} if self.browser_version is not None else {}
+        if self.browser_name is None:
+            raise AttributeError("You must set a browser name. "
+                                 f"Use one of '{self.__authorized_name_version}'")
+
+        if self.browser_name == "safari":
+            self.__serve_safari(__params)
+        if "chrom" in self.browser_name:
+            self.__server_chrome(__params)
+        if self.browser_name == "opera":
+            self.__serve_opera(__params)
         else:
-            if self.__driver_path is None:
-                self.__driver_path = BrowserServer.__DRIVER_MANAGER[self.browser_name](
-                    **__params
-                ).install()
-
-            option = BrowserServer.__OPTIONS_SWITCHER[self.browser_name]()
-            if self.driver_options:
-                for opt in self.driver_options:
-                    option.add_argument(opt)
-            service = BrowserServer.__SERVICE_SWITCHER[self.browser_name](self.__driver_path)
-            self.__web_driver = BrowserServer.__WEB_DRIVERS[self.browser_name](
-                service=service,
-                options=option)
-
+            self.__serve_other(__params)
         self.__launched = True
         return 0
 
@@ -280,22 +316,24 @@ class BrowserServer:
         try:
             # Process the filename
             if save_to is None:
-                filename = os.path.join(
-                    self.__temp_save_to, "screenshot-{}.png".format(self.__serve_time()))
+                filename = os.path.join(self.__temp_save_to,
+                                        f"screenshot-{self.__serve_time()}.png")
+
             else:
-                log.debug("Try to save to '{}'".format(save_to))
-                filename = os.path.join(save_to, "screenshot-{}.png".format(self.__serve_time()))
+                log.debug(f"Try to save to '{save_to}'")
+                filename = os.path.join(save_to,
+                                        f"screenshot-{self.__serve_time()}.png")
             if is_full_screen:
                 result = self.__full_screenshot(filename)
             else:
                 result = self.webdriver.get_screenshot_as_file(filename)
             if not result:
-                log.error("The screenshot could not be done."
-                          " Please check if the file path is correct."
-                          " Get '{}'".format(repr(result)))
-                raise IOError("The screenshot could not be done."
-                              " Please check if the file path is correct."
-                              " Get '{}'".format(repr(result)))
+                log.error(f"The screenshot could not be done."
+                          f" Please check if the file path is correct. Get '{repr(result)}'")
+
+                raise IOError(f"The screenshot could not be done."
+                              f" Please check if the file path is correct. Get '{repr(result)}'")
+
             return os.path.realpath(filename)
         except IOError as io_error:
             log.error(f"Screenshot raised an IO error '{io_error.args[0]}'")
@@ -374,7 +412,9 @@ class BrowserServer:
 
     # TODO add unit test
     def click_element(self, field: dict = None, web_element: WebElement = None):
-        """Perform a click element on the element. Use the find_element method to find it"""
+        """Perform a click element on the element. Use the find_element method to find it
+        :raise NoSuchElementException: where element is not found
+        """
         return click_element(driver=self.webdriver,
                              field=field,
                              web_element=web_element)
@@ -404,7 +444,7 @@ class BrowserServer:
         """Select a field within a mat_option list
 
     If root_field is defined then click it and search for visible_text in mat-option elements.
-    Otherwise only search for visible_text in mat-options elements"""
+    Otherwise, only search for visible_text in mat-options elements"""
         return select_in_angular_dropdown(driver=self.webdriver,
                                           root_field=root_field,
                                           visible_text=visible_text)
