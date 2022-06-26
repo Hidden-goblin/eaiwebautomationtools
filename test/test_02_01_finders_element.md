@@ -28,6 +28,7 @@ Use a default browser such as Chrome in 32 bit version
 Serve the web driver
 
     >>> myWebDriver.serve()
+    <BLANKLINE>
     0
 
 Request the web server IP 127.0.0.1:8081

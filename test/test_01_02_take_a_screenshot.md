@@ -26,6 +26,7 @@ Instantiate a web driver using the eaiautomatontools.browserServer
     >>> myBrowser.browser_name = "Chrome"
     
     >>> myBrowser.serve()
+    <BLANKLINE>
     0
 
     >>> myBrowser.go_to(url="http://localhost:8081")
