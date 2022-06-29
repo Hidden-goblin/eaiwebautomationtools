@@ -132,6 +132,9 @@ To Do
 
 Release Notes
 =============
+- version 1.1.6:
+  - replace `selenium.webdriver.chrome.options.Options.headless` with `selenium.webdriver.chrome.options.Options.add_argument("--headless")`.
+No clue on the reason the previous behaviour stopped working.
 - version 1.1.5:
   - fix removal of opera from webdriver
   - `click_element` raise NoSuchElementException when element is not found
