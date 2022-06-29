@@ -191,12 +191,14 @@ class BrowserServer:
 
     def __server_chrome(self, params: dict):
         if "headless-chrom" in self.browser_name:
+            self.driver_options = "--headless"
             option = BrowserServer.__OPTIONS_SWITCHER[self.browser_name]()
             option.add_experimental_option('excludeSwitches', ['enable-logging'])
             if self.driver_options:
                 for opt in self.driver_options:
                     option.add_argument(opt)
-            option.headless = True
+            # option.add_argument("--headless")
+            # option.headless = True
             if self.__driver_path is None:
                 if "ium" in self.browser_name:
                     params["chrome_type"] = ChromeType.CHROMIUM
