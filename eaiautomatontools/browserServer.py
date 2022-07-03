@@ -189,43 +189,30 @@ class BrowserServer:
     def __serve_time():
         return int(datetime.now().timestamp() * 1000000)
 
-    def __server_chrome(self, params: dict):
-        if "headless-chrom" in self.browser_name:
-            self.driver_options = "--headless"
-            option = BrowserServer.__OPTIONS_SWITCHER[self.browser_name]()
+    def __serve_chrome(self, params: dict):
+        option = BrowserServer.__OPTIONS_SWITCHER[self.browser_name]()
+        # Headless management
+        if "headless" in self.browser_name:
+            if "--headless" not in self.driver_options:
+                log.info("Add headless in driver options")
+                self.driver_options = "--headless"
             option.add_experimental_option('excludeSwitches', ['enable-logging'])
-            if self.driver_options:
-                for opt in self.driver_options:
-                    option.add_argument(opt)
-            # option.add_argument("--headless")
-            # option.headless = True
-            if self.__driver_path is None:
-                if "ium" in self.browser_name:
-                    params["chrome_type"] = ChromeType.CHROMIUM
+            option.headless = True
+        # Set options for all chrom* webdriver
+        if self.driver_options:
+            for opt in self.driver_options:
+                option.add_argument(opt)
 
-                self.__driver_path = BrowserServer.__DRIVER_MANAGER[
-                    self.browser_name](**params).install()
-            service = BrowserServer.__SERVICE_SWITCHER[self.browser_name](self.__driver_path)
-            self.__web_driver = BrowserServer.__WEB_DRIVERS[self.browser_name](
-                service=service,
-                options=option
-            )
-        elif "chrom" in self.browser_name:
-            # Hack https://stackoverflow.com/questions/64927909/
-            # failed-to-read-descriptor-from-node-connection-a-device-attached-to-the-system
-            if self.__driver_path is None:
-                if "ium" in self.browser_name:
-                    params["chrome_type"] = ChromeType.CHROMIUM
+        if self.__driver_path is None:
+            # Chromium flavour
+            if "ium" in self.browser_name:
+                params["chrome_type"] = ChromeType.CHROMIUM
 
-                self.__driver_path = BrowserServer.__DRIVER_MANAGER[
-                    self.browser_name](**params).install()
-            option = BrowserServer.__OPTIONS_SWITCHER[self.browser_name]()
-            option.add_experimental_option('excludeSwitches', ['enable-logging'])
-            if self.driver_options:
-                for opt in self.driver_options:
-                    option.add_argument(opt)
-            service = BrowserServer.__SERVICE_SWITCHER[self.browser_name](self.__driver_path)
-            self.__web_driver = BrowserServer.__WEB_DRIVERS[self.browser_name](
+            self.__driver_path = BrowserServer.__DRIVER_MANAGER[
+                self.browser_name](**params).install()
+
+        service = BrowserServer.__SERVICE_SWITCHER[self.browser_name](self.__driver_path)
+        self.__web_driver = BrowserServer.__WEB_DRIVERS[self.browser_name](
                 service=service,
                 options=option
             )
@@ -242,7 +229,7 @@ class BrowserServer:
                            "getting_started/open_browser/#opera'")
         self.browser_name = "chrome"
         try:
-            self.__server_chrome(params)
+            self.__serve_chrome(params)
         except Exception:
             self.browser_name = "opera"
             raise
@@ -286,7 +273,7 @@ class BrowserServer:
         if self.browser_name == "safari":
             self.__serve_safari(__params)
         if "chrom" in self.browser_name:
-            self.__server_chrome(__params)
+            self.__serve_chrome(__params)
         if self.browser_name == "opera":
             self.__serve_opera(__params)
         else:
