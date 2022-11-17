@@ -31,17 +31,18 @@ from webdriver_manager.microsoft import EdgeChromiumDriverManager
 from webdriver_manager.opera import OperaDriverManager
 from webdriver_manager.core.utils import ChromeType
 # Self 
-from .navigators import go_to_url, enter_frame, go_to_window
-from .finders import find_element, find_elements, find_from_elements, \
-    find_sub_element_from_element
-from .actions import fill_element, fill_elements, mouse_click, select_in_dropdown, set_checkbox, \
-    click_element, select_in_angular_dropdown, hover_element, select_in_elements
-from .alerts import alert_message, intercept_alert
-from .information import is_alert_present, is_field_exist, is_field_contains_text, \
-    element_text, is_field_displayed, is_field_enabled, how_many_windows, wait_for_another_window, \
-    where_am_i, \
-    is_checkbox_checked, retrieve_tabular
-from .drivers_tools import fullpage_screenshot, move_to
+from .navigators import (go_to_url, enter_frame, go_to_window)
+from .finders import (find_element, find_elements, find_from_elements,
+                      find_sub_element_from_element)
+from .actions import (fill_element, fill_elements, mouse_click, select_in_dropdown, set_checkbox,
+                      click_element, select_in_angular_dropdown, hover_element, select_in_elements)
+from .alerts import (alert_message, intercept_alert)
+from .information import (is_alert_present, is_field_exist, is_field_contains_text, element_text,
+                          is_field_displayed, is_field_enabled, how_many_windows,
+                          wait_for_another_window,
+                          where_am_i,
+                          is_checkbox_checked, retrieve_tabular, is_field_in_viewport)
+from .drivers_tools import (fullpage_screenshot, move_to)
 
 log = logging.getLogger(__name__)
 
@@ -587,6 +588,14 @@ class BrowserServer:
                             is_angular: bool = False):
         return is_checkbox_checked(driver=self.webdriver, field=field, web_element=web_element,
                                    is_angular=is_angular)
+
+    def is_element_in_viewport(self,
+                               field: dict = None,
+                               web_element: WebElement = None) -> bool:
+        """Check if the element is in the viewport"""
+        return is_field_in_viewport(driver=self.webdriver,
+                                    field=field,
+                                    web_element=web_element)
 
     def wait_for_another_window(self, wait_until: int = 1) -> bool:
         """Wait for another window to pop"""
