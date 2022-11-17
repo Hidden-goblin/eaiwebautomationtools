@@ -133,6 +133,10 @@ To Do
 Release Notes
 =============
 - version 1.1.7:
+  - add information method to check if an element is in the viewport
+    - browserServer.is\_element\_in\_viewport(field, [webElement])
+    - information.is\_field\_in\_viewport(driver, field, [webElement])
+- version 1.1.7:
   - Rewrite __serve_chrome method to lower complexity
 - version 1.1.6:
   - replace `selenium.webdriver.chrome.options.Options.headless` with `selenium.webdriver.chrome.options.Options.add_argument("--headless")`.

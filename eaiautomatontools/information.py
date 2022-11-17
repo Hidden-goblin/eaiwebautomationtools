@@ -178,6 +178,30 @@ def is_field_displayed(driver=None,
         return False
 
 
+def is_field_in_viewport(driver=None,
+                         field: dict = None,
+                         web_element: WebElement = None) -> bool:
+    """
+    Check if the field is in the viewport
+    :param driver: a selenium web driver
+    :param field: a dictionary representing the web element to search
+    :param web_element: a web_element to search from
+    :return: Boolean. True if element is in the viewport
+    """
+    element = find_element(driver, field, web_element, avoid_move_to=True)
+    # Element location
+    element_rect = element.rect
+    viewport = driver.execute_script('return [window.pageYOffset, window.pageXOffset, '
+                                     'document.documentElement.clientWidth, '
+                                     'document.documentElement.clientHeight]')
+
+    return all((viewport[1] <= element_rect["x"],
+                viewport[1] + viewport[2] >= element_rect["x"] + element_rect["width"],
+                viewport[0] <= element_rect["y"],
+                viewport[0] + viewport[3] >= element_rect["y"] + element_rect["height"])
+               )
+
+
 def is_field_enabled(driver=None,
                      field: dict = None,
                      web_element: WebElement = None,
