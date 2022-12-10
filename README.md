@@ -132,6 +132,10 @@ To Do
 
 Release Notes
 =============
+- version 1.1.8:
+  - add information method to check if an element is in the viewport
+    - browserServer.is\_element\_in\_viewport(field, [webElement])
+    - information.is\_field\_in\_viewport(driver, field, [webElement])
 - version 1.1.7:
   - Rewrite __serve_chrome method to lower complexity
 - version 1.1.6:
