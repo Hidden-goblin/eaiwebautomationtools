@@ -29,7 +29,7 @@ from webdriver_manager.chrome import ChromeDriverManager
 from webdriver_manager.firefox import GeckoDriverManager
 from webdriver_manager.microsoft import EdgeChromiumDriverManager
 from webdriver_manager.opera import OperaDriverManager
-from webdriver_manager.core.utils import ChromeType
+from webdriver_manager.core.os_manager import ChromeType
 # Self 
 from .navigators import (go_to_url, enter_frame, go_to_window)
 from .finders import (find_element, find_elements, find_from_elements,
