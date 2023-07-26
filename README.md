@@ -132,6 +132,8 @@ To Do
 
 Release Notes
 =============
+- version 1.1.9:
+  - update path to find ChromeType in webdriver-manager package
 - version 1.1.8:
   - add information method to check if an element is in the viewport
     - browserServer.is\_element\_in\_viewport(field, [webElement])
