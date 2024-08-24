@@ -192,6 +192,7 @@ class BrowserServer:
 
     def __serve_chrome(self, params: dict):
         option = BrowserServer.__OPTIONS_SWITCHER[self.browser_name]()
+        self.driver_options = "--disable-search-engine-choice-screen"
         # Headless management
         if "headless" in self.browser_name:
             if "--headless" not in self.driver_options:
